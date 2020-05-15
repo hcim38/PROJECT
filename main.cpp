@@ -5,6 +5,7 @@
 //BUG tura nie kończy się pod rozdaniu wszystkich pkt. - nie wiadomo gdzie sie znajduje
 //BUG boty potrafią psuć wartości swoich kloców
 //BUG boty potrafią tworzyć kloce na już istniejących (błedy przy funkcji capture)
+//BUG boty nie potrafią przejmować innych kloców niż 4 dookoła siebie
 
 int main()
 {
