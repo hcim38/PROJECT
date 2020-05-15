@@ -1,6 +1,5 @@
 #include "mainFunctions.h"
 //TODO naprawc AI
-//TODO utrudnic sobie zycie dodajac wiele zmiennych do wlasciwych sekcji private:
 //WARNING nie do końca widoczna zasadność istnienia klasy TileMap
 
 int main()
@@ -51,7 +50,7 @@ int main()
             if (event.type == event.KeyReleased && event.key.code == sf::Keyboard::Space) {
                 for (auto &player : players) {
                     for (auto &tile : player.m_ownership) {
-                        tile.origin = false;
+                        tile.setorigin(false);
                     }
                 }
                 pointsLeft = players[turn].m_ownership.size();

@@ -13,8 +13,8 @@ bool TileMap::load(const std::string &textures,
             Tile temp(m_textures,
                       tileSize,
                       sf::Vector2f(i * tileSize.x * 2 + 16, 2 * j * tileSize.y + 16));
-            temp.m_tilesize = tileSize;           //ustalenie rozmiaru obiektu
-            temp.m_position = sf::Vector2i(i, j); //ustalenie pozycji
+            temp.tilesize(tileSize);           //ustalenie rozmiaru obiektu
+            temp.position(sf::Vector2i(i, j)); //ustalenie pozycji
             m_objects.emplace_back(temp);
         }
 

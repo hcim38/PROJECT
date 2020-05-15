@@ -5,6 +5,8 @@
 class TileMap //Generacja mapy //TODO finetuning
 {
 public:
+    friend int main(); //FIXME TEMP
+
     sf::VertexArray m_vertices;
     sf::Texture m_textures;
     std::vector<Tile> m_objects;

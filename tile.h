@@ -7,12 +7,15 @@
 
 class Tile : public sf::Sprite //NOTE podstawowy i jedyny obiekt na mapie
 {
-public:                      //czyszczone po pomyslnym zakonczeniu tury edytowane w turn manager
+private:
     sf::Vector2i m_tilesize; //wielkosc i pozycja kloca
     sf::Vector2i m_position;
-    bool origin = false;
+    bool m_origin = false;
     bool m_Null = 0;
     int m_value = 0;
+
+public:
+    friend int main(); //FIXME TEMP
 
     Tile(bool Null)
     {
@@ -28,12 +31,17 @@ public:                      //czyszczone po pomyslnym zakonczeniu tury edytowan
         setTextureRect(sf::IntRect(0, 0, size.x, size.y));
         m_value = value;
     }
-    bool fight(Tile &target);
-    bool Null() { return m_Null; }
+    int value() const { return m_value; }
+    sf::Vector2i tilesize() { return m_tilesize; }
+    bool origin() { return m_origin; }
 
     void setvalue(int value) { m_value = value; }
+    void setorigin(bool newO) { m_origin = newO; }
+    void tilesize(sf::Vector2i Nsize) { m_tilesize = Nsize; }
+    void position(sf::Vector2i Npos) { m_position = Npos; }
 
-    int value() { return m_value; }
+    bool fight(Tile &target);
+    bool Null() { return m_Null; }
 
     void textCorrection();
 
