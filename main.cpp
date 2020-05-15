@@ -1,6 +1,10 @@
 #include "mainFunctions.h"
 //TODO naprawc AI
+//TODO zmienic sposob dzialania AI z rób wszystko w 1 ruchu do 1 ruch 1 czynność najlepiej z opóźnieniem między ruchami
 //WARNING nie do końca widoczna zasadność istnienia klasy TileMap
+//BUG tura nie kończy się pod rozdaniu wszystkich pkt. - nie wiadomo gdzie sie znajduje
+//BUG boty potrafią psuć wartości swoich kloców
+//BUG boty potrafią tworzyć kloce na już istniejących (błedy przy funkcji capture)
 
 int main()
 {
@@ -14,17 +18,7 @@ int main()
     Tile clickedAt(0);
     if (!map.load("tiles.png", sf::Vector2i(32, 32), 10))
         return -1;
-    std::vector<Player> players;
-    players.emplace_back(Player(map));
-    players.emplace_back(Player("Player01", 1));
-    players.emplace_back(Player("Player02", 2, 1));
-    players.emplace_back(Player("Player03", 3, 1));
-    capture(map.m_objects[35], players[0], players[1]);
-    capture(map.m_objects[33], players[0], players[2]);
-    capture(map.m_objects[53], players[0], players[3]);
-    players[1].m_ownership[0].m_value = 12;
-    players[2].m_ownership[0].m_value = 7;
-    players[3].m_ownership[0].m_value = 3;
+    std::vector<Player> players = setupPlayers(map);
 
     sf::RectangleShape indicator(sf::Vector2f(16, 16));
 
@@ -35,7 +29,7 @@ int main()
     font.loadFromFile("Lato-Regular.ttf");
     text.setFont(font);
     text.setCharacterSize(8);
-    std::cout << std::endl << "Now playing:" << players[turn].m_nickname << std::endl << std::endl;
+    std::cout << std::endl << "Now playing:" << players[turn].nickname() << std::endl << std::endl;
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -57,8 +51,8 @@ int main()
                 if (EndOfTurn) {
                     released = 1;
                 }
-                EndOfTurn = 1;            
-                std::cout << "Points Left for player:" << players[turn].m_nickname << " "
+                EndOfTurn = 1;
+                std::cout << "Points Left for player:" << players[turn].nickname() << " "
                           << pointsLeft << std::endl;
             }
         }
@@ -87,7 +81,7 @@ int main()
                     }
                 }
                 std::cout << std::endl
-                          << "Now playing:" << players[turn].m_nickname << std::endl
+                          << "Now playing:" << players[turn].nickname() << std::endl
                           << std::endl;
             }
         }
@@ -101,7 +95,7 @@ int main()
 
         released = 0;
         clickedAt = Tile(0);
-        indicator.setFillColor(players[turn].m_playersColor);
+        indicator.setFillColor(players[turn].playersColor());
         //rysowanko
         for (auto player : players) {
             for (auto val : player.m_ownership) {

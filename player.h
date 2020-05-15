@@ -11,7 +11,10 @@ private:
     std::vector<Tile> m_ownership;
 
 public:
-    friend int main(); //FIXME TEMP
+    friend std::vector<Player> setupPlayers(TileMap &map); //FIXME TEMP
+    friend int main();
+    friend void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long long &turn);
+    friend bool addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long &pointsLeft);
 
     Player(std::string nickname, int posInVec, bool AI = 0)
     {

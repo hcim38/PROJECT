@@ -83,13 +83,13 @@ void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long lo
     if (clickedAt != Tile(0)) {
         //
         for (auto &player1 : players) {
-            for (auto &tile1 : player1.ownership()) { //
+            for (auto &tile1 : player1.m_ownership) { //
                 //
                 if (clickedAt == tile1 && !tile1.origin()) { // found clicked tile
                     // it's not the origin
                     //
                     for (auto &player2 : players) {               // looking for origin
-                        for (auto &tile2 : player2.ownership()) { //
+                        for (auto &tile2 : player2.m_ownership) { //
                             //
                             if (tile2.origin()) // found the origin
                             {
@@ -113,7 +113,7 @@ void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long lo
                     //origin not found
                     for (auto &tile3 :
                          players[turn]
-                             .ownership()) { //check if player of the actual turn owns this tile
+                             .m_ownership) { //check if player of the actual turn owns this tile
                         //
                         if (clickedAt == tile3) {
                             tile3.setorigin(true); //make new origin
@@ -130,11 +130,11 @@ void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long lo
 
     //po sprawdzeniu gdzie kliknieto szukam origin i podswietlam tilesy do okola
     for (auto &playerM : players) {
-        for (auto &tileM : playerM.ownership()) {
+        for (auto &tileM : playerM.m_ownership) {
             //
             if (tileM.origin()) {
                 for (auto &player : players) {
-                    for (auto &tile : player.ownership()) {
+                    for (auto &tile : player.m_ownership) {
                         //
                         if (tileM.movePossible(tile) && tileM.value() > 1
                             && tileM.getColor() != tile.getColor()) {
@@ -152,7 +152,7 @@ void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long lo
 
 bool addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long &pointsLeft)
 {
-    for (auto &tile : player.ownership()) {
+    for (auto &tile : player.m_ownership) {
         if (tile == clickedAt && tile.getColor() == player.playersColor() && tile.value() < 12) {
             tile.setvalue(tile.value() + 1);
             pointsLeft -= 1;
@@ -164,4 +164,21 @@ bool addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long &point
         return true;
     }
     return false;
+}
+
+std::vector<Player> setupPlayers(TileMap &map)
+{
+    std::vector<Player> players;
+    players.emplace_back(Player(map));
+    players.emplace_back(Player("Player01", 1));
+    players.emplace_back(Player("Player02", 2, 1));
+    players.emplace_back(Player("Player03", 3, 1));
+    capture(map.m_objects[35], players[0], players[1]);
+    capture(map.m_objects[33], players[0], players[2]);
+    capture(map.m_objects[53], players[0], players[3]);
+    players[1].m_ownership[0].setvalue(2);
+    players[2].m_ownership[0].setvalue(2);
+    players[3].m_ownership[0].setvalue(2);
+
+    return players;
 }
