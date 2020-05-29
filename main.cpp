@@ -1,6 +1,6 @@
 #include "mainFunctions.h"
+#include <QResource>
 
-//WARNING nie do końca widoczna zasadność istnienia klasy TileMap
 //BUG mozliwe jest przerwanie czyjejs tury klawiszem 'SPACE'
 
 void duplicatesCheck(std::vector<Player> &Players) //chyba nie znaleziono jeszcze :V
@@ -49,7 +49,8 @@ int main()
 
     Tile clickedAt(0);
     sf::Texture m_textures;
-    m_textures.loadFromFile("tiles.png");
+    QResource Texture(":/Textures/tiles.png");
+    m_textures.loadFromMemory(Texture.data(), Texture.size());
 
     std::vector<Tile> MAP;
     MAP = loadMap(m_textures, sf::Vector2i(32, 32), 10);
@@ -62,7 +63,8 @@ int main()
     bool EndOfTurn = 0, released = 0;
     sf::Text text;
     sf::Font font;
-    font.loadFromFile("Lato-Regular.ttf");
+    QResource Font(":/Fonts/Lato-Regular.ttf");
+    font.loadFromMemory(Font.data(), Font.size());
     text.setFont(font);
     text.setCharacterSize(8);
     std::cout << std::endl << "Now playing:" << players[turn].nickname() << std::endl << std::endl;
@@ -79,11 +81,11 @@ int main()
             }
             if (event.type == event.KeyReleased && event.key.code == sf::Keyboard::Space) {
                 for (auto &player : players) {
-                    for (auto &tile : player.m_ownership) {
+                    for (auto &tile : player.m_ownership) { //TODO metoda void remOriginParam()
                         tile.setorigin(false);
                     }
                 }
-                pointsLeft = players[turn].m_ownership.size();
+                pointsLeft = players[turn].ownership().size();
                 if (EndOfTurn) {
                     released = 1;
                 }
@@ -110,7 +112,7 @@ int main()
                 if (turn >= players.size()) {
                     turn = 1;
                 }
-                while (players[turn].m_ownership.size() == 0) {
+                while (players[turn].ownership().size() == 0) {
                     turn++;
                     if (turn >= players.size()) {
                         turn = 1;
@@ -122,7 +124,7 @@ int main()
             }
         }
 
-        if (players[turn].m_ownership.size() == 0) {
+        if (players[turn].ownership().size() == 0) {
             turn++;
             if (turn >= players.size()) {
                 turn = 1;
@@ -138,12 +140,14 @@ int main()
         //rysowanko
 
         for (auto player : players) {
-            for (auto val : player.m_ownership) {
+            for (auto val : player.ownership()) {
                 window.draw(val);
-                text.setString(std::to_string(val.m_value));
-                text.setPosition(val.getPosition());
-                text.move(13, 11);
-                window.draw(text);
+                if (val.value() > 0) {
+                    text.setString(std::to_string(val.value()));
+                    text.setPosition(val.getPosition());
+                    text.move(13, 11);
+                    window.draw(text);
+                }
             }
         }
         window.draw(indicator);

@@ -29,10 +29,10 @@ void AI(std::vector<Player> &players, unsigned long long &turn)
     std::vector<Tile> possibleMoves;
     Tile origin(0);
 
-    for (auto &turnOwnerTile : players[turn].m_ownership) {
+    for (auto &turnOwnerTile : players[turn].ownership()) {
         if (turnOwnerTile.value() > 1) {
             for (auto &enemy : players) {
-                for (auto &enemyTile : enemy.m_ownership) {
+                for (auto &enemyTile : enemy.ownership()) {
                     if (turnOwnerTile.movePossible(enemyTile)
                         && turnOwnerTile.getColor() != enemyTile.getColor()) {
                         //mozliwy ruch
@@ -47,7 +47,7 @@ void AI(std::vector<Player> &players, unsigned long long &turn)
         }
     }
     if (possibleMoves.size() == 0) {
-        for (auto &turnOwnerTile : players[turn].m_ownership) {
+        for (auto &turnOwnerTile : players[turn].m_ownership) { //TODO nowa metoda
             if (turnOwnerTile.value() < 12) {
                 turnOwnerTile.setvalue(turnOwnerTile.value() + 1);
             }
@@ -62,7 +62,7 @@ void AI(std::vector<Player> &players, unsigned long long &turn)
 
     std::sort(possibleMoves.begin(), possibleMoves.end(), sortByScore);
 
-    for (auto &attacker : players[turn].m_ownership) {
+    for (auto &attacker : players[turn].m_ownership) { //TODO byc moze integracja capture() z fight()
         if (attacker == origin) {
             if (attacker.fight(possibleMoves[0])) {
                 for (auto &enemy : players) {
@@ -77,7 +77,7 @@ void AI(std::vector<Player> &players, unsigned long long &turn)
 }
 
 void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long long &turn)
-{
+{ //WARNING m_wonership zbyt czesto wykorzystywany
     if (players[turn].AI()) {
         AI(players, turn);
         return;
@@ -155,7 +155,9 @@ void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long lo
     }
 }
 
-bool addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long &pointsLeft)
+bool addPointsToTiles(Tile &clickedAt,
+                      Player &player,
+                      unsigned long long &pointsLeft) //todo przeniesc to do gracza lub tile
 {
     for (auto &tile : player.m_ownership) {
         if (tile == clickedAt && tile.getColor() == player.playersColor() && tile.value() < 12) {
@@ -171,7 +173,8 @@ bool addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long &point
     return false;
 }
 
-std::vector<Player> setupPlayers(std::vector<Tile> &map)
+std::vector<Player> setupPlayers(
+    std::vector<Tile> &map) //TODO zastanowic sie ale chyba musi byc friend
 {
     std::vector<Player> players;
     players.emplace_back(Player(map));

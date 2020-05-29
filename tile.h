@@ -35,8 +35,11 @@ public:
     sf::Vector2i tilesize() { return m_tilesize; }
     bool origin() { return m_origin; }
 
-    void setvalue(int value) { m_value = value; }
-    void setorigin(bool newO) { m_origin = newO; }
+    void setvalue(int value)
+    {
+        m_value = value;
+    } //FIXME po co to wgl jest private skoro mam taka funkcje!?
+    void setorigin(bool newO) { m_origin = newO; } //FIXME @up
     void tilesize(sf::Vector2i Nsize) { m_tilesize = Nsize; }
     void position(sf::Vector2i Npos) { m_position = Npos; }
 
