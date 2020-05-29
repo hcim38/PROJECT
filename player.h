@@ -15,6 +15,7 @@ public:
     friend int main();
     friend void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long long &turn);
     friend bool addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long &pointsLeft);
+    friend void AI(std::vector<Player> &players, unsigned long long &turn);
 
     Player(std::string nickname, int posInVec, bool AI = 0)
     {

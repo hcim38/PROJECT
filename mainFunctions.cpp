@@ -31,14 +31,14 @@ void AI(std::vector<Player> &players, unsigned long long &turn)
     while (Changes) {
         Changes = 0;
 
-        for (auto &tileTurn : players[turn].ownership()) {
+        for (auto &tileTurn : players[turn].m_ownership) {
             //dla kazdego kloca po kolei
             //szuka mozliwych ruchow
             if (tileTurn.value() > 1) {
                 for (auto &ennemy : players) {
                     if (ennemy.playersColor() != players[turn].playersColor()) {
                         //jesli jest potencjalnym wrogiem
-                        for (auto &ennemyTile : ennemy.ownership()) {
+                        for (auto &ennemyTile : ennemy.m_ownership) {
                             if (tileTurn.movePossible(ennemyTile)) {
                                 //ruch z pojedynczego kloca jest mozliwy na kloca wroga
                                 possibleTargets.emplace_back(ennemyTile);
@@ -62,7 +62,7 @@ void AI(std::vector<Player> &players, unsigned long long &turn)
             }
         }
     }
-    for (auto &tile : players[turn].ownership()) {
+    for (auto &tile : players[turn].m_ownership) {
         if (tile.value() != 12)
             tile.setvalue(1 + tile.value());
     }
