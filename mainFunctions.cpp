@@ -1,4 +1,5 @@
 #include "mainFunctions.h"
+#include "windows.h"
 
 void clicked(sf::Vector2i pos, std::vector<Player> &players, Tile &clickedAt)
 {
@@ -25,46 +26,53 @@ bool sortByScore(const Tile &one, const Tile &two)
 
 void AI(std::vector<Player> &players, unsigned long long &turn)
 {
-    std::vector<Tile> possibleTargets;
+    std::vector<Tile> possibleMoves;
+    Tile origin(0);
 
-    bool Changes = 1;
-    while (Changes) {
-        Changes = 0;
-
-        for (auto &tileTurn : players[turn].m_ownership) {
-            //dla kazdego kloca po kolei
-            //szuka mozliwych ruchow
-            if (tileTurn.value() > 1) {
-                for (auto &ennemy : players) {
-                    if (ennemy.playersColor() != players[turn].playersColor()) {
-                        //jesli jest potencjalnym wrogiem
-                        for (auto &ennemyTile : ennemy.m_ownership) {
-                            if (tileTurn.movePossible(ennemyTile)) {
-                                //ruch z pojedynczego kloca jest mozliwy na kloca wroga
-                                possibleTargets.emplace_back(ennemyTile);
-                            }
-                        }
+    for (auto &turnOwnerTile : players[turn].m_ownership) {
+        if (turnOwnerTile.value() > 1) {
+            for (auto &enemy : players) {
+                for (auto &enemyTile : enemy.m_ownership) {
+                    if (turnOwnerTile.movePossible(enemyTile)
+                        && turnOwnerTile.getColor() != enemyTile.getColor()) {
+                        //mozliwy ruch
+                        possibleMoves.emplace_back(enemyTile);
                     }
                 }
-                //wybieram ruch
-                //
-                if (possibleTargets.size() > 0) {
-                    std::sort(possibleTargets.begin(), possibleTargets.end(), sortByScore);
-                    for (auto &ennemy : players) {
-                        if (ennemy.playersColor() == possibleTargets[0].getColor()) {
-                            if (tileTurn.fight(possibleTargets[0])) {
-                                capture(possibleTargets[0], ennemy, players[turn]);
-                            }
-                            break;
-                        }
+            }
+            if (possibleMoves.size() > 0) {
+                origin = turnOwnerTile;
+                break;
+            }
+        }
+    }
+    if (possibleMoves.size() == 0) {
+        for (auto &turnOwnerTile : players[turn].m_ownership) {
+            if (turnOwnerTile.value() < 12) {
+                turnOwnerTile.setvalue(turnOwnerTile.value() + 1);
+            }
+        }
+
+        turn++;
+        if (turn >= players.size()) {
+            turn = 1;
+        }
+        return;
+    }
+
+    std::sort(possibleMoves.begin(), possibleMoves.end(), sortByScore);
+
+    for (auto &attacker : players[turn].m_ownership) {
+        if (attacker == origin) {
+            if (attacker.fight(possibleMoves[0])) {
+                for (auto &enemy : players) {
+                    if (enemy.playersColor() == possibleMoves[0].getColor()) {
+                        capture(possibleMoves[0], enemy, players[turn]);
+                        break;
                     }
                 }
             }
         }
-    }
-    for (auto &tile : players[turn].m_ownership) {
-        if (tile.value() != 12)
-            tile.setvalue(1 + tile.value());
     }
 }
 
@@ -72,9 +80,6 @@ void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long lo
 {
     if (players[turn].AI()) {
         AI(players, turn);
-        turn++;
-        if (turn >= players.size())
-            turn = 1;
         return;
     }
 
@@ -166,16 +171,16 @@ bool addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long &point
     return false;
 }
 
-std::vector<Player> setupPlayers(TileMap &map)
+std::vector<Player> setupPlayers(std::vector<Tile> &map)
 {
     std::vector<Player> players;
     players.emplace_back(Player(map));
     players.emplace_back(Player("Player01", 1));
     players.emplace_back(Player("Player02", 2, 1));
     players.emplace_back(Player("Player03", 3, 1));
-    capture(map.m_objects[35], players[0], players[1]);
-    capture(map.m_objects[33], players[0], players[2]);
-    capture(map.m_objects[53], players[0], players[3]);
+    capture(map[35], players[0], players[1]);
+    capture(map[33], players[0], players[2]);
+    capture(map[53], players[0], players[3]);
     players[1].m_ownership[0].setvalue(2);
     players[2].m_ownership[0].setvalue(2);
     players[3].m_ownership[0].setvalue(2);

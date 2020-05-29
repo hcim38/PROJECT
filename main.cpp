@@ -1,11 +1,44 @@
 #include "mainFunctions.h"
-//TODO naprawc AI
-//TODO zmienic sposob dzialania AI z rób wszystko w 1 ruchu do 1 ruch 1 czynność najlepiej z opóźnieniem między ruchami
+
 //WARNING nie do końca widoczna zasadność istnienia klasy TileMap
-//BUG tura nie kończy się pod rozdaniu wszystkich pkt. - nie wiadomo gdzie sie znajduje
-//BUG boty potrafią psuć wartości swoich kloców
-//BUG boty potrafią tworzyć kloce na już istniejących (błedy przy funkcji capture)
-//BUG boty nie potrafią przejmować innych kloców niż 4 dookoła siebie
+//BUG mozliwe jest przerwanie czyjejs tury klawiszem 'SPACE'
+
+void duplicatesCheck(std::vector<Player> &Players) //chyba nie znaleziono jeszcze :V
+{
+    for (auto &PlayerOne : Players) {
+        for (auto &tileOne : PlayerOne.ownership()) {
+            for (auto &PlayerTwo : Players) {
+                if (PlayerOne.playersColor() != PlayerTwo.playersColor()) {
+                    for (auto &tileTwo : PlayerTwo.ownership()) {
+                        if (tileOne == tileTwo) {
+                            std::cout << "DUPLIKAT KLOCA!!" << std::endl;
+                            system("pause");
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+std::vector<Tile> loadMap(sf::Texture &m_textures, sf::Vector2i tileSize, unsigned int mapSize)
+
+{
+    std::vector<Tile> m_objects;
+
+    for (unsigned int i = 0; i < mapSize; ++i)
+        for (unsigned int j = 0; j < mapSize;
+             ++j) { //petla wypelniajaca vector do ustalonych rozmiarow
+            Tile temp(m_textures,
+                      tileSize,
+                      sf::Vector2f(i * tileSize.x * 2 + 16, 2 * j * tileSize.y + 16));
+            temp.tilesize(tileSize);           //ustalenie rozmiaru obiektu
+            temp.position(sf::Vector2i(i, j)); //ustalenie pozycji
+            m_objects.emplace_back(temp);
+        }
+
+    return m_objects;
+}
 
 int main()
 {
@@ -14,12 +47,14 @@ int main()
     window.setFramerateLimit(240);
     window.setVerticalSyncEnabled(1);
 
-    //ustawianie podstawowych obiektow na ktorych dziala gra
-    TileMap map;
     Tile clickedAt(0);
-    if (!map.load("tiles.png", sf::Vector2i(32, 32), 10))
-        return -1;
-    std::vector<Player> players = setupPlayers(map);
+    sf::Texture m_textures;
+    m_textures.loadFromFile("tiles.png");
+
+    std::vector<Tile> MAP;
+    MAP = loadMap(m_textures, sf::Vector2i(32, 32), 10);
+
+    std::vector<Player> players = setupPlayers(MAP);
 
     sf::RectangleShape indicator(sf::Vector2f(16, 16));
 
@@ -97,7 +132,11 @@ int main()
         released = 0;
         clickedAt = Tile(0);
         indicator.setFillColor(players[turn].playersColor());
+
+        duplicatesCheck(players);
+
         //rysowanko
+
         for (auto player : players) {
             for (auto val : player.m_ownership) {
                 window.draw(val);

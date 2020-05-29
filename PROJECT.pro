@@ -6,13 +6,11 @@ CONFIG -= qt
 SOURCES += \
         main.cpp \
         mainFunctions.cpp \
-        map.cpp \
         player.cpp \
         tile.cpp
 
 HEADERS += \
     mainFunctions.h \
-    map.h \
     player.h \
     tile.h
 

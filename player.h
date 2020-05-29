@@ -1,6 +1,6 @@
 #ifndef PLAYER_H
 #define PLAYER_H
-#include "map.h"
+#include "tile.h"
 
 class Player //NOTE Gracz i zestaw jego funkcji
 {
@@ -11,7 +11,7 @@ private:
     std::vector<Tile> m_ownership;
 
 public:
-    friend std::vector<Player> setupPlayers(TileMap &map); //FIXME TEMP
+    friend std::vector<Player> setupPlayers(std::vector<Tile> &map); //FIXME TEMP
     friend int main();
     friend void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long long &turn);
     friend bool addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long &pointsLeft);
@@ -42,11 +42,11 @@ public:
             break;
         }
     }
-    Player(TileMap map)
+    Player(std::vector<Tile> map)
     {
         m_nickname = "MAP";
         m_playersColor = sf::Color(255, 255, 255, 255);
-        for (auto val : map.m_objects) {
+        for (auto val : map) {
             m_ownership.emplace_back(val);
         }
     }
