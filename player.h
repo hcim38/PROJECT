@@ -1,12 +1,21 @@
 #ifndef PLAYER_H
 #define PLAYER_H
-#include "map.h"
+#include "tile.h"
 
 class Player //NOTE Gracz i zestaw jego funkcji
 {
-public:
-    std::vector<Tile> m_ownership;
+private:
     bool m_AI;
+    std::string m_nickname;
+    sf::Color m_playersColor;
+    std::vector<Tile> m_ownership;
+
+public:
+    friend std::vector<Player> setupPlayers(std::vector<Tile> &map); //FIXME TEMP
+    friend int main();
+    friend void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long long &turn);
+    friend bool addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long &pointsLeft);
+    friend void AI(std::vector<Player> &players, unsigned long long &turn);
 
     Player(std::string nickname, int posInVec, bool AI = 0)
     {
@@ -33,14 +42,20 @@ public:
             break;
         }
     }
-    Player(TileMap map)
+    Player(std::vector<Tile> map)
     {
         m_nickname = "MAP";
         m_playersColor = sf::Color(255, 255, 255, 255);
-        for (auto val : map.m_objects) {
+        for (auto val : map) {
             m_ownership.emplace_back(val);
         }
     }
+
+    std::vector<Tile> ownership() { return m_ownership; }
+    sf::Color playersColor() { return m_playersColor; }
+    bool AI() { return m_AI; }
+    std::string nickname() { return m_nickname; }
+
     void addTileOwnership(Tile target) { m_ownership.emplace_back(target); }
     void removeOwnership(Tile target)
     {
@@ -50,11 +65,9 @@ public:
                 break;
             }
     }
+
     void colorCorrection();
     void textCorrection();
-
-    std::string m_nickname;
-    sf::Color m_playersColor;
 };
 
 #endif // PLAYER_H

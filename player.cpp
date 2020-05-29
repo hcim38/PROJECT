@@ -11,6 +11,6 @@ void Player::textCorrection()
 {
     for (auto &val : m_ownership) {
         val.setTextureRect(
-            sf::IntRect(val.value() * val.m_tilesize.x, 0, val.m_tilesize.x, val.m_tilesize.y));
+            sf::IntRect(val.value() * val.tilesize().x, 0, val.tilesize().x, val.tilesize().y));
     }
 }

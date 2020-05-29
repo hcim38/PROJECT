@@ -1,7 +1,44 @@
 #include "mainFunctions.h"
-//TODO naprawc AI
-//TODO utrudnic sobie zycie dodajac wiele zmiennych do wlasciwych sekcji private:
+
 //WARNING nie do końca widoczna zasadność istnienia klasy TileMap
+//BUG mozliwe jest przerwanie czyjejs tury klawiszem 'SPACE'
+
+void duplicatesCheck(std::vector<Player> &Players) //chyba nie znaleziono jeszcze :V
+{
+    for (auto &PlayerOne : Players) {
+        for (auto &tileOne : PlayerOne.ownership()) {
+            for (auto &PlayerTwo : Players) {
+                if (PlayerOne.playersColor() != PlayerTwo.playersColor()) {
+                    for (auto &tileTwo : PlayerTwo.ownership()) {
+                        if (tileOne == tileTwo) {
+                            std::cout << "DUPLIKAT KLOCA!!" << std::endl;
+                            system("pause");
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+std::vector<Tile> loadMap(sf::Texture &m_textures, sf::Vector2i tileSize, unsigned int mapSize)
+
+{
+    std::vector<Tile> m_objects;
+
+    for (unsigned int i = 0; i < mapSize; ++i)
+        for (unsigned int j = 0; j < mapSize;
+             ++j) { //petla wypelniajaca vector do ustalonych rozmiarow
+            Tile temp(m_textures,
+                      tileSize,
+                      sf::Vector2f(i * tileSize.x * 2 + 16, 2 * j * tileSize.y + 16));
+            temp.tilesize(tileSize);           //ustalenie rozmiaru obiektu
+            temp.position(sf::Vector2i(i, j)); //ustalenie pozycji
+            m_objects.emplace_back(temp);
+        }
+
+    return m_objects;
+}
 
 int main()
 {
@@ -10,22 +47,14 @@ int main()
     window.setFramerateLimit(240);
     window.setVerticalSyncEnabled(1);
 
-    //ustawianie podstawowych obiektow na ktorych dziala gra
-    TileMap map;
     Tile clickedAt(0);
-    if (!map.load("tiles.png", sf::Vector2i(32, 32), 10))
-        return -1;
-    std::vector<Player> players;
-    players.emplace_back(Player(map));
-    players.emplace_back(Player("Player01", 1));
-    players.emplace_back(Player("Player02", 2, 1));
-    players.emplace_back(Player("Player03", 3, 1));
-    capture(map.m_objects[35], players[0], players[1]);
-    capture(map.m_objects[33], players[0], players[2]);
-    capture(map.m_objects[53], players[0], players[3]);
-    players[1].m_ownership[0].m_value = 12;
-    players[2].m_ownership[0].m_value = 7;
-    players[3].m_ownership[0].m_value = 3;
+    sf::Texture m_textures;
+    m_textures.loadFromFile("tiles.png");
+
+    std::vector<Tile> MAP;
+    MAP = loadMap(m_textures, sf::Vector2i(32, 32), 10);
+
+    std::vector<Player> players = setupPlayers(MAP);
 
     sf::RectangleShape indicator(sf::Vector2f(16, 16));
 
@@ -36,7 +65,7 @@ int main()
     font.loadFromFile("Lato-Regular.ttf");
     text.setFont(font);
     text.setCharacterSize(8);
-    std::cout << std::endl << "Now playing:" << players[turn].m_nickname << std::endl << std::endl;
+    std::cout << std::endl << "Now playing:" << players[turn].nickname() << std::endl << std::endl;
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -51,15 +80,15 @@ int main()
             if (event.type == event.KeyReleased && event.key.code == sf::Keyboard::Space) {
                 for (auto &player : players) {
                     for (auto &tile : player.m_ownership) {
-                        tile.origin = false;
+                        tile.setorigin(false);
                     }
                 }
                 pointsLeft = players[turn].m_ownership.size();
                 if (EndOfTurn) {
                     released = 1;
                 }
-                EndOfTurn = 1;            
-                std::cout << "Points Left for player:" << players[turn].m_nickname << " "
+                EndOfTurn = 1;
+                std::cout << "Points Left for player:" << players[turn].nickname() << " "
                           << pointsLeft << std::endl;
             }
         }
@@ -88,7 +117,7 @@ int main()
                     }
                 }
                 std::cout << std::endl
-                          << "Now playing:" << players[turn].m_nickname << std::endl
+                          << "Now playing:" << players[turn].nickname() << std::endl
                           << std::endl;
             }
         }
@@ -102,8 +131,12 @@ int main()
 
         released = 0;
         clickedAt = Tile(0);
-        indicator.setFillColor(players[turn].m_playersColor);
+        indicator.setFillColor(players[turn].playersColor());
+
+        duplicatesCheck(players);
+
         //rysowanko
+
         for (auto player : players) {
             for (auto val : player.m_ownership) {
                 window.draw(val);
