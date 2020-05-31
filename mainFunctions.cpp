@@ -35,7 +35,6 @@ void AI(std::vector<Player> &players, unsigned long long &turn)
                 for (auto &enemyTile : enemy.ownership()) {
                     if (turnOwnerTile.movePossible(enemyTile)
                         && turnOwnerTile.getColor() != enemyTile.getColor()) {
-                        //mozliwy ruch
                         possibleMoves.emplace_back(enemyTile);
                     }
                 }
@@ -150,16 +149,13 @@ void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long lo
     }
 }
 
-bool addPointsToTiles(Tile &clickedAt,
-                      Player &player,
-                      unsigned long long &pointsLeft) //todo przeniesc to do gracza lub tile
+bool addPointsToTiles(Tile &clickedAt, Player &player,
+                      unsigned long long &pointsLeft) //
 {
     for (auto &tile : player.m_ownership) {
         if (tile == clickedAt && tile.getColor() == player.playersColor() && tile.value() < 12) {
             tile.setvalue(tile.value() + 1); //TODO musi byc priv
             pointsLeft -= 1;
-            //std::cout << "Points Left for player:" << player.nickname() << " " << pointsLeft
-            //<< std::endl;
         }
     }
     if (pointsLeft == 0) {
