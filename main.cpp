@@ -1,7 +1,6 @@
 #include "mainFunctions.h"
 #include <QResource>
-
-//BUG mozliwe jest przerwanie czyjejs tury klawiszem 'SPACE'
+#include <QtDebug>
 
 void duplicatesCheck(std::vector<Player> &Players) //chyba nie znaleziono jeszcze :V
 {
@@ -11,7 +10,7 @@ void duplicatesCheck(std::vector<Player> &Players) //chyba nie znaleziono jeszcz
                 if (PlayerOne.playersColor() != PlayerTwo.playersColor()) {
                     for (auto &tileTwo : PlayerTwo.ownership()) {
                         if (tileOne == tileTwo) {
-                            std::cout << "DUPLIKAT KLOCA!!" << std::endl;
+                            qDebug() << "DUPLIKAT KLOCA!!";
                             system("pause");
                         }
                     }
@@ -47,27 +46,27 @@ int main()
     window.setFramerateLimit(240);
     window.setVerticalSyncEnabled(1);
 
+    QResource qrTexture(":/Textures/tiles.png");
+    QResource qrFont(":/Fonts/Lato-Regular.ttf");
+
     Tile clickedAt(0);
     sf::Texture m_textures;
-    QResource Texture(":/Textures/tiles.png");
-    m_textures.loadFromMemory(Texture.data(), Texture.size());
-
+    sf::Font font;
     std::vector<Tile> MAP;
+    sf::RectangleShape indicator(sf::Vector2f(16, 16));
+    sf::Text text;
+
+    font.loadFromMemory(qrFont.data(), qrFont.size());
+    m_textures.loadFromMemory(qrTexture.data(), qrTexture.size());
+    text.setFont(font);
+    text.setCharacterSize(8);
     MAP = loadMap(m_textures, sf::Vector2i(32, 32), 10);
 
     std::vector<Player> players = setupPlayers(MAP);
 
-    sf::RectangleShape indicator(sf::Vector2f(16, 16));
-
     unsigned long long turn = 1, pointsLeft = 0;
     bool EndOfTurn = 0, released = 0;
-    sf::Text text;
-    sf::Font font;
-    QResource Font(":/Fonts/Lato-Regular.ttf");
-    font.loadFromMemory(Font.data(), Font.size());
-    text.setFont(font);
-    text.setCharacterSize(8);
-    std::cout << std::endl << "Now playing:" << players[turn].nickname() << std::endl << std::endl;
+
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -80,22 +79,19 @@ int main()
                         clickedAt);
             }
             if (event.type == event.KeyReleased && event.key.code == sf::Keyboard::Space) {
-                for (auto &player : players) {
-                    for (auto &tile : player.m_ownership) { //TODO metoda void remOriginParam()
-                        tile.setorigin(false);
+                if (!players[turn].AI()) {
+                    for (auto &player : players) {
+                        clearOriginParam(player.m_ownership);
                     }
+                    pointsLeft = players[turn].ownership().size();
+                    if (EndOfTurn) {
+                        released = 1;
+                    }
+                    EndOfTurn = 1;
                 }
-                pointsLeft = players[turn].ownership().size();
-                if (EndOfTurn) {
-                    released = 1;
-                }
-                EndOfTurn = 1;
-                std::cout << "Points Left for player:" << players[turn].nickname() << " "
-                          << pointsLeft << std::endl;
             }
         }
 
-        //NOTE magia wyswietlania
         window.clear(sf::Color::Black);
 
         for (auto &player : players) {
@@ -118,9 +114,6 @@ int main()
                         turn = 1;
                     }
                 }
-                std::cout << std::endl
-                          << "Now playing:" << players[turn].nickname() << std::endl
-                          << std::endl;
             }
         }
 

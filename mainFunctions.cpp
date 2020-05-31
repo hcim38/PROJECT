@@ -47,12 +47,7 @@ void AI(std::vector<Player> &players, unsigned long long &turn)
         }
     }
     if (possibleMoves.size() == 0) {
-        for (auto &turnOwnerTile : players[turn].m_ownership) { //TODO nowa metoda
-            if (turnOwnerTile.value() < 12) {
-                turnOwnerTile.setvalue(turnOwnerTile.value() + 1);
-            }
-        }
-
+        plus1ForEveryone(players[turn].m_ownership);
         turn++;
         if (turn >= players.size()) {
             turn = 1;
@@ -77,7 +72,7 @@ void AI(std::vector<Player> &players, unsigned long long &turn)
 }
 
 void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long long &turn)
-{ //WARNING m_wonership zbyt czesto wykorzystywany
+{ //WARNING m_ownership zbyt czesto wykorzystywany
     if (players[turn].AI()) {
         AI(players, turn);
         return;
@@ -105,8 +100,8 @@ void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long lo
                                         //wlasciwy owner
                                         //FIGHT tile2 -> tile1
                                         if (tile2.fight(tile1)) {
-                                            tile2.setorigin(false);
-                                            tile1.setorigin(true);
+                                            tile2.setorigin(false); //TODO to ma byc priv
+                                            tile1.setorigin(true);  //TODO to tez
                                             capture(tile1, player1, player2);
                                         }
                                         //FIGTH end
@@ -121,7 +116,7 @@ void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long lo
                              .m_ownership) { //check if player of the actual turn owns this tile
                         //
                         if (clickedAt == tile3) {
-                            tile3.setorigin(true); //make new origin
+                            tile3.setorigin(true); //make new origin TODO to tez ma byc priv
                             tile3.setColor(sf::Color::Red);
                             break;
                         }
@@ -161,10 +156,10 @@ bool addPointsToTiles(Tile &clickedAt,
 {
     for (auto &tile : player.m_ownership) {
         if (tile == clickedAt && tile.getColor() == player.playersColor() && tile.value() < 12) {
-            tile.setvalue(tile.value() + 1);
+            tile.setvalue(tile.value() + 1); //TODO musi byc priv
             pointsLeft -= 1;
-            std::cout << "Points Left for player:" << player.nickname() << " " << pointsLeft
-                      << std::endl;
+            //std::cout << "Points Left for player:" << player.nickname() << " " << pointsLeft
+            //<< std::endl;
         }
     }
     if (pointsLeft == 0) {
@@ -173,20 +168,40 @@ bool addPointsToTiles(Tile &clickedAt,
     return false;
 }
 
-std::vector<Player> setupPlayers(
-    std::vector<Tile> &map) //TODO zastanowic sie ale chyba musi byc friend
+std::vector<Player> setupPlayers(std::vector<Tile> &map)
 {
     std::vector<Player> players;
     players.emplace_back(Player(map));
     players.emplace_back(Player("Player01", 1));
     players.emplace_back(Player("Player02", 2, 1));
     players.emplace_back(Player("Player03", 3, 1));
-    capture(map[35], players[0], players[1]);
+    //capture(map[35], players[0], players[1]);
     capture(map[33], players[0], players[2]);
     capture(map[53], players[0], players[3]);
-    players[1].m_ownership[0].setvalue(2);
-    players[2].m_ownership[0].setvalue(2);
-    players[3].m_ownership[0].setvalue(2);
+    //players[1].m_ownership[0].setBegginerValue();
+    players[2].m_ownership[0].setBegginerValue();
+    players[3].m_ownership[0].setBegginerValue();
 
     return players;
 }
+
+void plus1ForEveryone(std::vector<Tile> &tiles)
+{
+    int pointsLeft = tiles.size(), Full = 0;
+    while (pointsLeft > 0) {
+        for (auto &tile : tiles) {
+            if (tile.m_value < 12) {
+                tile.m_value += 1;
+                pointsLeft -= 1;
+            } else {
+                Full++;
+            }
+        }
+        if (Full >= tiles.size()) {
+            break;
+        }
+        Full = 0;
+    }
+}
+
+void clearOriginParam(std::vector<Tile> &tiles) {}

@@ -2,10 +2,8 @@
 #define TILE_H
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
-#include <iostream>
-#include <memory>
 
-class Tile : public sf::Sprite //NOTE podstawowy i jedyny obiekt na mapie
+class Tile : public sf::Sprite
 {
 private:
     sf::Vector2i m_tilesize; //wielkosc i pozycja kloca
@@ -16,6 +14,7 @@ private:
 
 public:
     friend int main(); //FIXME TEMP
+    friend void plus1ForEveryone(std::vector<Tile> &tiles);
 
     Tile(bool Null)
     {
@@ -34,6 +33,8 @@ public:
     int value() const { return m_value; }
     sf::Vector2i tilesize() { return m_tilesize; }
     bool origin() { return m_origin; }
+
+    void setBegginerValue() { m_value = 2; }
 
     void setvalue(int value)
     {

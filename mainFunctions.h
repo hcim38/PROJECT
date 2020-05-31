@@ -9,4 +9,6 @@ void AI(std::vector<Player> &players, unsigned long long &turn);
 void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long long &turn);
 bool addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long &pointsLeft);
 std::vector<Player> setupPlayers(std::vector<Tile> &map);
+void plus1ForEveryone(std::vector<Tile> &tiles);
+void clearOriginParam(std::vector<Tile> &tiles);
 #endif // MAINFUNCTIONS_H

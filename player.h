@@ -2,7 +2,7 @@
 #define PLAYER_H
 #include "tile.h"
 
-class Player //NOTE Gracz i zestaw jego funkcji
+class Player
 {
 private:
     bool m_AI;
