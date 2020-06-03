@@ -14,4 +14,6 @@ std::vector<Tile> loadMap(sf::Texture &m_textures, sf::Vector2i tileSize, unsign
 std::vector<Player> setupPlayers(std::vector<Tile> &map,
                                  int playersInGame = 4,
                                  int AIplayersInGame = 3);
+std::vector<sf::VertexArray> createLines(std::vector<Player> &players);
+void duplicatesCheck(std::vector<Player> &Players);
 #endif // MAINFUNCTIONS_H

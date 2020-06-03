@@ -149,7 +149,7 @@ bool addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long &point
 }
 
 std::vector<Player> setupPlayers(std::vector<Tile> &map, int playersInGame, int AIplayersInGame)
-{
+{ //WARNING ciezko odtwarzalne BUG czasami tworzy duplikat
     QRandomGenerator randomizer(QRandomGenerator::securelySeeded());
     std::vector<Player> players;
     std::string playerName;
@@ -165,7 +165,10 @@ std::vector<Player> setupPlayers(std::vector<Tile> &map, int playersInGame, int 
     }
 
     for (auto it = players.begin() + 1; it != players.end(); it++) {
-        capture(map[randomizer.bounded(0, (players[0].m_ownership.size() - 1))], players[0], *it);
+        capture(players[0].ownership()[randomizer.bounded(0, (players[0].m_ownership.size() - 1))],
+                players[0],
+                *it);
+        duplicatesCheck(players);
     }
     for (auto it = players.begin() + 1; it != players.end(); it++) {
         it->m_ownership[0].setBegginerValue();
@@ -198,15 +201,76 @@ std::vector<Tile> loadMap(sf::Texture &m_textures, sf::Vector2i tileSize, unsign
     std::vector<Tile> m_objects;
 
     for (unsigned int i = 0; i < mapSize; ++i)
-        for (unsigned int j = 0; j < mapSize;
-             ++j) { //petla wypelniajaca vector do ustalonych rozmiarow
-            Tile temp(m_textures,
-                      tileSize,
-                      sf::Vector2f(i * tileSize.x * 2 + 16, 2 * j * tileSize.y + 16));
-            temp.m_tilesize = tileSize;           //ustalenie rozmiaru obiektu
-            temp.m_position = sf::Vector2i(i, j); //ustalenie pozycji
-            m_objects.emplace_back(temp);
+        for (unsigned int j = 0; j < mapSize; ++j) {
+            if (j % 2 == 0) {
+                Tile temp(m_textures,
+                          tileSize,
+                          sf::Vector2f(i * tileSize.x * 2, 2 * j * tileSize.y));
+                temp.m_tilesize = tileSize;
+                temp.m_position = sf::Vector2i(i, j);
+                temp.offset = 0;
+                m_objects.emplace_back(temp);
+            } else {
+                Tile temp(m_textures,
+                          tileSize,
+                          sf::Vector2f(i * tileSize.x * 2 + tileSize.x, 2 * j * tileSize.y));
+                temp.m_tilesize = tileSize;
+                temp.m_position = sf::Vector2i(i, j);
+                temp.offset = 1;
+                m_objects.emplace_back(temp);
+            }
         }
+    for (auto &obj : m_objects) {
+        obj.move(tileSize.x / 2, tileSize.y / 2);
+    }
 
     return m_objects;
+}
+
+std::vector<sf::VertexArray> createLines(std::vector<Player> &players)
+{
+    sf::VertexArray temp(sf::Lines, 2);
+    std::vector<sf::VertexArray> vec;
+
+    for (auto &playerM : players) {
+        for (auto &tileOne : playerM.ownership()) {
+            for (auto &player : players) {
+                for (auto &tileTwo : player.ownership()) {
+                    if (tileOne.movePossibleWithOutColor(tileTwo)) {
+                        temp[0].color = sf::Color(100, 100, 100, 50);
+                        temp[0].position = sf::Vector2f(tileOne.getGlobalBounds().left
+                                                            + (tileOne.getGlobalBounds().width / 2),
+                                                        tileOne.getGlobalBounds().top
+                                                            + (tileOne.getGlobalBounds().height
+                                                               / 2));
+                        temp[1].color = sf::Color(100, 100, 100, 50);
+                        temp[1].position = sf::Vector2f(tileTwo.getGlobalBounds().left
+                                                            + (tileTwo.getGlobalBounds().width / 2),
+                                                        tileTwo.getGlobalBounds().top
+                                                            + (tileTwo.getGlobalBounds().height
+                                                               / 2));
+                        vec.emplace_back(temp);
+                    }
+                }
+            }
+        }
+    }
+    return vec;
+}
+
+void duplicatesCheck(std::vector<Player> &Players) //chyba nie znaleziono jeszcze :V
+{
+    for (auto &PlayerOne : Players) {
+        for (auto &tileOne : PlayerOne.ownership()) {
+            for (auto &PlayerTwo : Players) {
+                if (PlayerOne.playersColor() != PlayerTwo.playersColor()) {
+                    for (auto &tileTwo : PlayerTwo.ownership()) {
+                        if (tileOne == tileTwo) {
+                            qDebug() << "DUPLIKAT KLOCA!!";
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

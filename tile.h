@@ -16,12 +16,13 @@ private:
     int m_value = 0;
 
 public:
-    Tile(sf::Texture &texture, sf::Vector2i size, sf::Vector2f pos, int value = 0)
+    bool offset = 0;
+
+    Tile(sf::Texture &texture, sf::Vector2i size, sf::Vector2f pos)
     {
         setTexture(texture);
         setPosition(pos);
         setTextureRect(sf::IntRect(0, 0, size.x, size.y));
-        m_value = value;
     }
 
     Tile(bool Null)
@@ -31,6 +32,7 @@ public:
 
         m_position = sf::Vector2i(-10, -10);
     }
+
     friend void plus1ForEveryone(std::vector<Tile> &tiles);
     friend std::vector<Tile> loadMap(sf::Texture &m_textures,
                                      sf::Vector2i tileSize,
@@ -66,12 +68,63 @@ public:
     }
     bool movePossible(Tile &target)
     {
-        return (target.m_position.x == m_position.x
-                && (target.m_position.y == m_position.y + 1
-                    || target.m_position.y == m_position.y - 1))
-               || (target.m_position.y == m_position.y
-                   && (target.m_position.x == m_position.x + 1
-                       || target.m_position.x == m_position.x - 1));
+        if (getColor() != target.getColor()) {
+            if (m_position.y == target.m_position.y) {
+                return (m_position.x == target.m_position.x + 1)
+                       || (m_position.x == target.m_position.x - 1);
+            }
+            if (!offset) {
+                if (m_position.y == target.m_position.y + 1) {
+                    return (m_position.x == target.m_position.x + 1)
+                           || (m_position.x == target.m_position.x);
+                }
+
+                if (m_position.y == target.m_position.y - 1) {
+                    return (m_position.x == target.m_position.x + 1)
+                           || (m_position.x == target.m_position.x);
+                }
+            } else {
+                if (m_position.y == target.m_position.y + 1) {
+                    return (m_position.x == target.m_position.x - 1)
+                           || (m_position.x == target.m_position.x);
+                }
+
+                if (m_position.y == target.m_position.y - 1) {
+                    return (m_position.x == target.m_position.x - 1)
+                           || (m_position.x == target.m_position.x);
+                }
+            }
+            return false;
+        }
+    }
+    bool movePossibleWithOutColor(Tile &target)
+    {
+        if (m_position.y == target.m_position.y) {
+            return (m_position.x == target.m_position.x + 1)
+                   || (m_position.x == target.m_position.x - 1);
+        }
+        if (!offset) {
+            if (m_position.y == target.m_position.y + 1) {
+                return (m_position.x == target.m_position.x + 1)
+                       || (m_position.x == target.m_position.x);
+            }
+
+            if (m_position.y == target.m_position.y - 1) {
+                return (m_position.x == target.m_position.x + 1)
+                       || (m_position.x == target.m_position.x);
+            }
+        } else {
+            if (m_position.y == target.m_position.y + 1) {
+                return (m_position.x == target.m_position.x - 1)
+                       || (m_position.x == target.m_position.x);
+            }
+
+            if (m_position.y == target.m_position.y - 1) {
+                return (m_position.x == target.m_position.x - 1)
+                       || (m_position.x == target.m_position.x);
+            }
+        }
+        return false;
     }
 };
 

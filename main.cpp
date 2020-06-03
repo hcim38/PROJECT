@@ -1,29 +1,10 @@
 #include "mainFunctions.h"
 
-//TODO przejsc na HEX
-
-void duplicatesCheck(std::vector<Player> &Players) //chyba nie znaleziono jeszcze :V
-{
-    for (auto &PlayerOne : Players) {
-        for (auto &tileOne : PlayerOne.ownership()) {
-            for (auto &PlayerTwo : Players) {
-                if (PlayerOne.playersColor() != PlayerTwo.playersColor()) {
-                    for (auto &tileTwo : PlayerTwo.ownership()) {
-                        if (tileOne == tileTwo) {
-                            qDebug() << "DUPLIKAT KLOCA!!";
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
 int main()
 {
     //Ustawianie okna gry
     std::cout << "Welcome to Tile Conqueror game" << std::endl;
-    QResource qrTexture(":/Textures/tiles.png");
+    QResource qrTexture(":/Textures/hex-tex.png");
     QResource qrFont(":/Fonts/Lato-Regular.ttf");
 
     Tile clickedAt(0);
@@ -37,19 +18,19 @@ int main()
     m_textures.loadFromMemory(qrTexture.data(), qrTexture.size());
     text.setFont(font);
     text.setCharacterSize(8);
-    MAP = loadMap(m_textures, sf::Vector2i(32, 32), 10);
+    MAP = loadMap(m_textures, sf::Vector2i(30, 30), 10);
 
     std::cout << "Before we start we need to setup the game" << std::endl
               << "Press '1' if you would like to use default settings" << std::endl
               << "OR" << std::endl
               << "Press '2' if you would like to set up the game manualy" << std::endl;
-    char choice;
-    std::cin >> choice;
+    char choice = '1';
+    //std::cin >> choice;
 
     std::vector<Player> players;
 
     if (choice == '1') { //FIXME make it userproof!
-        players = setupPlayers(MAP);
+        players = setupPlayers(MAP, 5, 5);
         system("cls");
     } else if (choice == '2') {
         system("cls");
@@ -77,7 +58,7 @@ int main()
 
         return -1;
     }
-
+    std::vector<sf::VertexArray> Lines = createLines(players);
     sf::RenderWindow window(sf::VideoMode(640, 640), "Tilemap");
     window.setFramerateLimit(60);
     window.setVerticalSyncEnabled(1);
@@ -124,6 +105,9 @@ int main()
         //uczytelnic zarzadzanie tura
 
         window.clear(sf::Color::Black);
+        for (auto &line : Lines) {
+            window.draw(line);
+        }
 
         for (auto &player : players) { //korekta po nieuzywanych podswietleniach
             player.textCorrection();
@@ -191,13 +175,16 @@ int main()
                 if (val.value() > 0) {
                     text.setString(std::to_string(val.value()));
                     text.setPosition(val.getPosition());
-                    text.move(13, 11);
+                    text.move(13, 10);
+                    if (val.value() > 9) {
+                        text.move(-3, 0);
+                    }
                     window.draw(text);
                 }
             }
         }
         if (!EndOfTurn || (clock.getElapsedTime().asSeconds() >= blinkInterval)) {
-            window.draw(indicator);
+            //window.draw(indicator);
             if (clock.getElapsedTime().asSeconds() >= 2 * blinkInterval) {
                 clock.restart();
             }
