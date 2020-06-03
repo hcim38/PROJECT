@@ -1,6 +1,8 @@
 QT += core
 TEMPLATE = app
-CONFIG += c++17
+CONFIG += console c++17
+
+
 
 SOURCES += \
         main.cpp \

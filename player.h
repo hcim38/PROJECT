@@ -11,30 +11,24 @@ private:
     std::vector<Tile> m_ownership;
 
 public:
-    friend std::vector<Player> setupPlayers(std::vector<Tile> &map); //FIXME TEMP
-    friend int main();
-    friend void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long long &turn);
-    friend bool addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long &pointsLeft);
-    friend void AI(std::vector<Player> &players, unsigned long long &turn);
-
     Player(std::string nickname, int posInVec, bool AI = 0)
     {
         m_AI = AI;
         m_nickname = nickname;
         switch (posInVec) {
-        case 0:
+        case 1:
             m_playersColor = sf::Color::Blue;
             break;
-        case 1:
+        case 2:
             m_playersColor = sf::Color::Green;
             break;
-        case 2:
+        case 3:
             m_playersColor = sf::Color::Red;
             break;
-        case 3:
+        case 4:
             m_playersColor = sf::Color::Magenta;
             break;
-        case 4:
+        case 5:
             m_playersColor = sf::Color::Yellow;
             break;
         default:
@@ -51,20 +45,22 @@ public:
         }
     }
 
+    friend std::vector<Player> setupPlayers(std::vector<Tile> &map,
+                                            int playersInGame,
+                                            int AIplayersInGame);
+    friend int main();
+    friend void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long long &turn);
+    friend bool addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long &pointsLeft);
+    friend void AI(std::vector<Player> &players, unsigned long long &turn);
+
     std::vector<Tile> ownership() { return m_ownership; }
     sf::Color playersColor() { return m_playersColor; }
     bool AI() { return m_AI; }
     std::string nickname() { return m_nickname; }
 
     void addTileOwnership(Tile target) { m_ownership.emplace_back(target); }
-    void removeOwnership(Tile target)
-    {
-        for (auto it = m_ownership.begin(); it != m_ownership.end(); it++)
-            if (*it == target) {
-                m_ownership.erase(it);
-                break;
-            }
-    }
+    void removeOwnership(Tile target);
+    void clearOrigin();
 
     void colorCorrection();
     void textCorrection();

@@ -28,7 +28,7 @@ void AI(std::vector<Player> &players, unsigned long long &turn)
 {
     std::vector<Tile> possibleMoves;
     Tile origin(0);
-
+    //Sprawic aby AI nie bilo sie gdy nie ma szans na wygrana
     for (auto &turnOwnerTile : players[turn].ownership()) {
         if (turnOwnerTile.value() > 1) {
             for (auto &enemy : players) {
@@ -56,13 +56,18 @@ void AI(std::vector<Player> &players, unsigned long long &turn)
 
     std::sort(possibleMoves.begin(), possibleMoves.end(), sortByScore);
 
-    for (auto &attacker : players[turn].m_ownership) { //TODO byc moze integracja capture() z fight()
+    for (auto &attacker : players[turn].m_ownership) {
         if (attacker == origin) {
-            if (attacker.fight(possibleMoves[0])) {
-                for (auto &enemy : players) {
-                    if (enemy.playersColor() == possibleMoves[0].getColor()) {
-                        capture(possibleMoves[0], enemy, players[turn]);
-                        break;
+            for (auto &enemy : players) {
+                if (enemy.playersColor() == possibleMoves[0].getColor()) {
+                    for (auto &enemyTile : enemy.m_ownership) {
+                        if (enemyTile == possibleMoves[0]) {
+                            //Found the exact tile to fight
+                            if (attacker.fight(enemyTile)) {
+                                capture(possibleMoves[0], enemy, players[turn]);
+                            }
+                            break;
+                        }
                     }
                 }
             }
@@ -72,7 +77,7 @@ void AI(std::vector<Player> &players, unsigned long long &turn)
 
 void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long long &turn)
 { //WARNING m_ownership zbyt czesto wykorzystywany
-    if (players[turn].AI()) {
+    if (players[turn].AI()) { //TODO obejrzec, prawdopodobnie przyda sie rework/uczytelnienie
         AI(players, turn);
         return;
     }
@@ -99,8 +104,8 @@ void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long lo
                                         //wlasciwy owner
                                         //FIGHT tile2 -> tile1
                                         if (tile2.fight(tile1)) {
-                                            tile2.setorigin(false); //TODO to ma byc priv
-                                            tile1.setorigin(true);  //TODO to tez
+                                            tile2.swapOrigin(tile1);
+
                                             capture(tile1, player1, player2);
                                         }
                                         //FIGTH end
@@ -115,8 +120,8 @@ void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long lo
                              .m_ownership) { //check if player of the actual turn owns this tile
                         //
                         if (clickedAt == tile3) {
-                            tile3.setorigin(true); //make new origin TODO to tez ma byc priv
-                            tile3.setColor(sf::Color::Red);
+                            tile3.makeOrigin();
+
                             break;
                         }
                     }
@@ -126,57 +131,45 @@ void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long lo
             }
         }
     }
-
-    //po sprawdzeniu gdzie kliknieto szukam origin i podswietlam tilesy do okola
-    for (auto &playerM : players) {
-        for (auto &tileM : playerM.m_ownership) {
-            //
-            if (tileM.origin()) {
-                for (auto &player : players) {
-                    for (auto &tile : player.m_ownership) {
-                        //
-                        if (tileM.movePossible(tile) && tileM.value() > 1
-                            && tileM.getColor() != tile.getColor()) {
-                            sf::Color actual = tile.getColor();
-                            actual.a = 150;
-                            tile.setColor(actual);
-                        }
-                    }
-                }
-                break;
-            }
-        }
-    }
 }
 
-bool addPointsToTiles(Tile &clickedAt, Player &player,
-                      unsigned long long &pointsLeft) //
+bool addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long &pointsLeft)
 {
     for (auto &tile : player.m_ownership) {
-        if (tile == clickedAt && tile.getColor() == player.playersColor() && tile.value() < 12) {
-            tile.setvalue(tile.value() + 1); //TODO musi byc priv
-            pointsLeft -= 1;
+        if (tile == clickedAt && tile.getColor() == player.playersColor()) {
+            tile.valPlus1(pointsLeft);
+            std::cout << "Points Left: " << pointsLeft << std::endl;
         }
     }
     if (pointsLeft == 0) {
+        system("cls");
         return true;
     }
     return false;
 }
 
-std::vector<Player> setupPlayers(std::vector<Tile> &map)
+std::vector<Player> setupPlayers(std::vector<Tile> &map, int playersInGame, int AIplayersInGame)
 {
+    QRandomGenerator randomizer(QRandomGenerator::securelySeeded());
     std::vector<Player> players;
+    std::string playerName;
     players.emplace_back(Player(map));
-    players.emplace_back(Player("Player01", 1));
-    players.emplace_back(Player("Player02", 2, 1));
-    players.emplace_back(Player("Player03", 3, 1));
-    //capture(map[35], players[0], players[1]);
-    capture(map[33], players[0], players[2]);
-    capture(map[53], players[0], players[3]);
-    //players[1].m_ownership[0].setBegginerValue();
-    players[2].m_ownership[0].setBegginerValue();
-    players[3].m_ownership[0].setBegginerValue();
+
+    int human = playersInGame - AIplayersInGame;
+
+    for (int i = 1; i <= playersInGame; i++) {
+        playerName = "Player ";
+        playerName.append(std::to_string(i));
+
+        players.emplace_back(Player(playerName, i, (i > human)));
+    }
+
+    for (auto it = players.begin() + 1; it != players.end(); it++) {
+        capture(map[randomizer.bounded(0, (players[0].m_ownership.size() - 1))], players[0], *it);
+    }
+    for (auto it = players.begin() + 1; it != players.end(); it++) {
+        it->m_ownership[0].setBegginerValue();
+    }
 
     return players;
 }
@@ -200,4 +193,20 @@ void plus1ForEveryone(std::vector<Tile> &tiles)
     }
 }
 
-void clearOriginParam(std::vector<Tile> &tiles) {}
+std::vector<Tile> loadMap(sf::Texture &m_textures, sf::Vector2i tileSize, unsigned int mapSize)
+{
+    std::vector<Tile> m_objects;
+
+    for (unsigned int i = 0; i < mapSize; ++i)
+        for (unsigned int j = 0; j < mapSize;
+             ++j) { //petla wypelniajaca vector do ustalonych rozmiarow
+            Tile temp(m_textures,
+                      tileSize,
+                      sf::Vector2f(i * tileSize.x * 2 + 16, 2 * j * tileSize.y + 16));
+            temp.m_tilesize = tileSize;           //ustalenie rozmiaru obiektu
+            temp.m_position = sf::Vector2i(i, j); //ustalenie pozycji
+            m_objects.emplace_back(temp);
+        }
+
+    return m_objects;
+}

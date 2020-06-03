@@ -1,5 +1,21 @@
 #include "player.h"
 
+void Player::removeOwnership(Tile target)
+{
+    for (auto it = m_ownership.begin(); it != m_ownership.end(); it++)
+        if (*it == target) {
+            m_ownership.erase(it);
+            break;
+        }
+}
+
+void Player::clearOrigin()
+{
+    for (auto &val : m_ownership) {
+        val.remOrigin();
+    }
+}
+
 void Player::colorCorrection()
 {
     for (auto &val : m_ownership) {

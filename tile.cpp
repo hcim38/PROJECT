@@ -1,5 +1,19 @@
 #include "tile.h"
 
+void Tile::valPlus1(unsigned long long &pointsLeft)
+{
+    if (m_value < 12) {
+        m_value += 1;
+        pointsLeft -= 1;
+    }
+}
+
+void Tile::swapOrigin(Tile &newOrigin)
+{
+    m_origin = false;
+    newOrigin.m_origin = true;
+}
+
 bool Tile::fight(Tile &target)
 {
     if (m_value > 1) { //requirement for fight

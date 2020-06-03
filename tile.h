@@ -2,6 +2,9 @@
 #define TILE_H
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
+#include <iostream>
+#include <QResource>
+#include <QtDebug>
 
 class Tile : public sf::Sprite
 {
@@ -13,8 +16,13 @@ private:
     int m_value = 0;
 
 public:
-    friend int main(); //FIXME TEMP
-    friend void plus1ForEveryone(std::vector<Tile> &tiles);
+    Tile(sf::Texture &texture, sf::Vector2i size, sf::Vector2f pos, int value = 0)
+    {
+        setTexture(texture);
+        setPosition(pos);
+        setTextureRect(sf::IntRect(0, 0, size.x, size.y));
+        m_value = value;
+    }
 
     Tile(bool Null)
     {
@@ -23,30 +31,23 @@ public:
 
         m_position = sf::Vector2i(-10, -10);
     }
-    Tile(sf::Texture &texture, sf::Vector2i size, sf::Vector2f pos, int value = 0)
-    {
-        setTexture(texture);
-        setPosition(pos);
-        setTextureRect(sf::IntRect(0, 0, size.x, size.y));
-        m_value = value;
-    }
+    friend void plus1ForEveryone(std::vector<Tile> &tiles);
+    friend std::vector<Tile> loadMap(sf::Texture &m_textures,
+                                     sf::Vector2i tileSize,
+                                     unsigned int mapSize);
+
     int value() const { return m_value; }
     sf::Vector2i tilesize() { return m_tilesize; }
     bool origin() { return m_origin; }
+    bool Null() { return m_Null; }
+    void makeOrigin() { m_origin = true; }
+    void remOrigin() { m_origin = false; }
 
     void setBegginerValue() { m_value = 2; }
 
-    void setvalue(int value)
-    {
-        m_value = value;
-    } //FIXME po co to wgl jest private skoro mam taka funkcje!?
-    void setorigin(bool newO) { m_origin = newO; } //FIXME @up
-    void tilesize(sf::Vector2i Nsize) { m_tilesize = Nsize; }
-    void position(sf::Vector2i Npos) { m_position = Npos; }
-
-    bool fight(Tile &target);
-    bool Null() { return m_Null; }
-
+    void valPlus1(unsigned long long &pointsLeft);
+    void swapOrigin(Tile &newOrigin);
+    bool fight(Tile &target);    
     void textCorrection();
 
     bool operator!=(const Tile &rhs) const
@@ -63,7 +64,6 @@ public:
         else
             return false;
     }
-    //sprawdzanie ruchu: +-1 pion; +- poziom; 0 po skosie;
     bool movePossible(Tile &target)
     {
         return (target.m_position.x == m_position.x

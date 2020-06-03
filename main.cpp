@@ -1,6 +1,6 @@
 #include "mainFunctions.h"
-#include <QResource>
-#include <QtDebug>
+
+//TODO przejsc na HEX
 
 void duplicatesCheck(std::vector<Player> &Players) //chyba nie znaleziono jeszcze :V
 {
@@ -11,7 +11,6 @@ void duplicatesCheck(std::vector<Player> &Players) //chyba nie znaleziono jeszcz
                     for (auto &tileTwo : PlayerTwo.ownership()) {
                         if (tileOne == tileTwo) {
                             qDebug() << "DUPLIKAT KLOCA!!";
-                            system("pause");
                         }
                     }
                 }
@@ -20,32 +19,10 @@ void duplicatesCheck(std::vector<Player> &Players) //chyba nie znaleziono jeszcz
     }
 }
 
-std::vector<Tile> loadMap(sf::Texture &m_textures, sf::Vector2i tileSize, unsigned int mapSize)
-
-{
-    std::vector<Tile> m_objects;
-
-    for (unsigned int i = 0; i < mapSize; ++i)
-        for (unsigned int j = 0; j < mapSize;
-             ++j) { //petla wypelniajaca vector do ustalonych rozmiarow
-            Tile temp(m_textures,
-                      tileSize,
-                      sf::Vector2f(i * tileSize.x * 2 + 16, 2 * j * tileSize.y + 16));
-            temp.tilesize(tileSize);           //ustalenie rozmiaru obiektu
-            temp.position(sf::Vector2i(i, j)); //ustalenie pozycji
-            m_objects.emplace_back(temp);
-        }
-
-    return m_objects;
-}
-
 int main()
 {
     //Ustawianie okna gry
-    sf::RenderWindow window(sf::VideoMode(640, 640), "Tilemap");
-    window.setFramerateLimit(240);
-    window.setVerticalSyncEnabled(1);
-
+    std::cout << "Welcome to Tile Conqueror game" << std::endl;
     QResource qrTexture(":/Textures/tiles.png");
     QResource qrFont(":/Fonts/Lato-Regular.ttf");
 
@@ -62,17 +39,63 @@ int main()
     text.setCharacterSize(8);
     MAP = loadMap(m_textures, sf::Vector2i(32, 32), 10);
 
-    std::vector<Player> players = setupPlayers(MAP);
+    std::cout << "Before we start we need to setup the game" << std::endl
+              << "Press '1' if you would like to use default settings" << std::endl
+              << "OR" << std::endl
+              << "Press '2' if you would like to set up the game manualy" << std::endl;
+    char choice;
+    std::cin >> choice;
+
+    std::vector<Player> players;
+
+    if (choice == '1') { //FIXME make it userproof!
+        players = setupPlayers(MAP);
+        system("cls");
+    } else if (choice == '2') {
+        system("cls");
+        int playersInGame, botsInGame;
+        std::cout
+            << "Set up how many players in range from 2 to 5 you would like to have including AI"
+            << std::endl
+            << "In this game less than 2 players is meaningless and more than 5 players is "
+               "unsupported"
+            << std::endl
+            << "Players: ";
+        std::cin >> playersInGame;
+        std::cout << std::endl
+                  << "Now how many of those " << playersInGame << " would like to be AI?"
+                  << std::endl
+                  << "Bots: ";
+        std::cin >> botsInGame;
+        std::cout << std::endl;
+
+        players = setupPlayers(MAP, playersInGame, botsInGame);
+
+        system("cls");
+    } else {
+        std::cout << "Wait, that's illegal!" << std::endl;
+
+        return -1;
+    }
+
+    sf::RenderWindow window(sf::VideoMode(640, 640), "Tilemap");
+    window.setFramerateLimit(60);
+    window.setVerticalSyncEnabled(1);
+
+    float blinkInterval = 0.3f;
 
     unsigned long long turn = 1, pointsLeft = 0;
-    bool EndOfTurn = 0, released = 0;
+    bool EndOfTurn = 0, released = 0, lit = 0;
+
+    sf::Clock clock;
 
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
+            if (event.type == sf::Event::Closed) {
                 window.close();
-            if (event.type == event.MouseButtonReleased //jezeli kliknieto LMB
+            }
+            if (event.type == event.MouseButtonReleased
                 && event.mouseButton.button == sf::Mouse::Left) {
                 clicked(sf::Mouse::getPosition(window), //wywyolanie reakcji na kliknecie
                         players,
@@ -81,20 +104,28 @@ int main()
             if (event.type == event.KeyReleased && event.key.code == sf::Keyboard::Space) {
                 if (!players[turn].AI()) {
                     for (auto &player : players) {
-                        clearOriginParam(player.m_ownership);
+                        if (player.ownership().size() > 0) {
+                            player.clearOrigin();
+                        }
                     }
                     pointsLeft = players[turn].ownership().size();
                     if (EndOfTurn) {
                         released = 1;
                     }
                     EndOfTurn = 1;
+                    std::cout << "Points Left for player: " << players[turn].nickname() << " "
+                              << pointsLeft << std::endl;
                 }
             }
         }
 
+        //TODO poprawic kolejnosc wywolywania funkcji
+        //ogolnie uprzatnac
+        //uczytelnic zarzadzanie tura
+
         window.clear(sf::Color::Black);
 
-        for (auto &player : players) {
+        for (auto &player : players) { //korekta po nieuzywanych podswietleniach
             player.textCorrection();
             player.colorCorrection();
         }
@@ -130,6 +161,28 @@ int main()
 
         duplicatesCheck(players);
 
+        //tutaj podswietlam
+        for (auto &playerM : players) {
+            for (auto &tileM : playerM.m_ownership) {
+                //
+                if (tileM.origin()) {
+                    sf::Color actual;
+                    for (auto &player : players) {
+                        for (auto &tile : player.m_ownership) {
+                            //
+                            if (tileM.movePossible(tile) && tileM.value() > 1
+                                && tileM.getColor() != tile.getColor()) {
+                                actual = tile.getColor();
+                                actual.a = 150;
+                                tile.setColor(actual);
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
         //rysowanko
 
         for (auto player : players) {
@@ -143,7 +196,13 @@ int main()
                 }
             }
         }
-        window.draw(indicator);
+        if (!EndOfTurn || (clock.getElapsedTime().asSeconds() >= blinkInterval)) {
+            window.draw(indicator);
+            if (clock.getElapsedTime().asSeconds() >= 2 * blinkInterval) {
+                clock.restart();
+            }
+        }
+
         window.display();
     }
 
