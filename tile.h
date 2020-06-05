@@ -34,9 +34,9 @@ public:
     }
 
     friend void plus1ForEveryone(std::vector<Tile> &tiles);
-    friend std::vector<Tile> loadMap(sf::Texture &m_textures,
-                                     sf::Vector2i tileSize,
-                                     unsigned int mapSize);
+    friend std::vector<Tile> generateTemplate(sf::Texture &m_textures,
+                                              sf::Vector2i tileSize,
+                                              unsigned int mapSize);
 
     int value() const { return m_value; }
     sf::Vector2i tilesize() { return m_tilesize; }

@@ -17,7 +17,7 @@ public:
         m_nickname = nickname;
         switch (posInVec) {
         case 1:
-            m_playersColor = sf::Color::Blue;
+            m_playersColor = sf::Color::Cyan;
             break;
         case 2:
             m_playersColor = sf::Color::Green;

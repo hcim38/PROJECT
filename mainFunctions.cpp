@@ -28,14 +28,16 @@ void AI(std::vector<Player> &players, unsigned long long &turn)
 {
     std::vector<Tile> possibleMoves;
     Tile origin(0);
-    //Sprawic aby AI nie bilo sie gdy nie ma szans na wygrana
+    //TODO Sprawic aby AI nie bilo sie gdy nie ma szans na wygrana
     for (auto &turnOwnerTile : players[turn].ownership()) {
         if (turnOwnerTile.value() > 1) {
             for (auto &enemy : players) {
                 for (auto &enemyTile : enemy.ownership()) {
                     if (turnOwnerTile.movePossible(enemyTile)
                         && turnOwnerTile.getColor() != enemyTile.getColor()) {
-                        possibleMoves.emplace_back(enemyTile);
+                        if ((enemyTile.value() < turnOwnerTile.value() - 1)
+                            || turnOwnerTile.value() > 5)
+                            possibleMoves.emplace_back(enemyTile);
                     }
                 }
             }
@@ -103,10 +105,9 @@ void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long lo
                                     } else {
                                         //wlasciwy owner
                                         //FIGHT tile2 -> tile1
-                                        if (tile2.fight(tile1)) {
-                                            tile2.swapOrigin(tile1);
-
+                                        if (tile2.fight(tile1)) {                                          
                                             capture(tile1, player1, player2);
+                                            tile2.swapOrigin(tile1);
                                         }
                                         //FIGTH end
                                     }
@@ -149,7 +150,7 @@ bool addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long &point
 }
 
 std::vector<Player> setupPlayers(std::vector<Tile> &map, int playersInGame, int AIplayersInGame)
-{ //WARNING ciezko odtwarzalne BUG czasami tworzy duplikat
+{
     QRandomGenerator randomizer(QRandomGenerator::securelySeeded());
     std::vector<Player> players;
     std::string playerName;
@@ -196,7 +197,9 @@ void plus1ForEveryone(std::vector<Tile> &tiles)
     }
 }
 
-std::vector<Tile> loadMap(sf::Texture &m_textures, sf::Vector2i tileSize, unsigned int mapSize)
+std::vector<Tile> generateTemplate(sf::Texture &m_textures,
+                                   sf::Vector2i tileSize,
+                                   unsigned int mapSize)
 {
     std::vector<Tile> m_objects;
 
@@ -271,6 +274,57 @@ void duplicatesCheck(std::vector<Player> &Players) //chyba nie znaleziono jeszcz
                     }
                 }
             }
+        }
+    }
+}
+
+void manualConfig(std::vector<Tile> &map, std::vector<Player> &players)
+{
+    int playersInGame, botsInGame;
+    while (1) {
+        std::cout
+            << "Set up how many players in range from 2 to 5 you would like to have including AI"
+            << std::endl
+            << "In this game less than 2 players is meaningless and more than 5 players is "
+               "unsupported"
+            << std::endl
+            << "Players: ";
+
+        std::cin >> playersInGame;
+        while (1) {
+            if (std::cin.fail()) {
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::cout << "Wait, that's illegal!" << std::endl << "Players: ";
+                std::cin >> playersInGame;
+            }
+            if (!std::cin.fail()) {
+                break;
+            }
+        }
+        std::cout << std::endl
+                  << "Now how many of those " << playersInGame << " would like to be AI?"
+                  << std::endl
+                  << "Bots: ";
+        std::cin >> botsInGame;
+        while (1) {
+            if (std::cin.fail()) {
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::cout << "Wait, that's illegal!" << std::endl << "Bots: ";
+                std::cin >> botsInGame;
+            } else {
+                break;
+            }
+        }
+        std::cout << std::endl;
+
+        if (playersInGame <= 5 && playersInGame > 0 && botsInGame <= playersInGame) {
+            players = setupPlayers(map, playersInGame, botsInGame);
+            break;
+        } else {
+            std::cout << "Those values are incorrect!" << std::endl;
+            std::cout << "Try again" << std::endl << std::endl;
         }
     }
 }
