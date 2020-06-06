@@ -1,8 +1,9 @@
 #ifndef MAINFUNCTIONS_H
 #define MAINFUNCTIONS_H
-
 #include "player.h"
+#include "windows.h"
 #include <QRandomGenerator>
+
 void clicked(sf::Vector2i pos, std::vector<Player> &players, Tile &clickedAt);
 void capture(Tile target, Player &loser, Player &winner);
 bool sortByScore(const Tile &one, const Tile &two);
@@ -17,6 +18,5 @@ std::vector<Player> setupPlayers(std::vector<Tile> &map,
                                  int playersInGame = 4,
                                  int AIplayersInGame = 3);
 std::vector<sf::VertexArray> createLines(std::vector<Player> &players);
-void duplicatesCheck(std::vector<Player> &Players);
 void manualConfig(std::vector<Tile> &map, std::vector<Player> &players);
 #endif // MAINFUNCTIONS_H

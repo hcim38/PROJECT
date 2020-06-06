@@ -5,43 +5,43 @@
 class Player
 {
 private:
-    bool m_AI;
-    std::string m_nickname;
-    sf::Color m_playersColor;
-    std::vector<Tile> m_ownership;
+    bool p_AI;
+    std::string p_nickname;
+    sf::Color p_playersColor;
+    std::vector<Tile> p_ownership;
 
 public:
     Player(std::string nickname, int posInVec, bool AI = 0)
     {
-        m_AI = AI;
-        m_nickname = nickname;
+        p_AI = AI;
+        p_nickname = nickname;
         switch (posInVec) {
         case 1:
-            m_playersColor = sf::Color::Cyan;
+            p_playersColor = sf::Color::Cyan;
             break;
         case 2:
-            m_playersColor = sf::Color::Green;
+            p_playersColor = sf::Color::Green;
             break;
         case 3:
-            m_playersColor = sf::Color::Red;
+            p_playersColor = sf::Color::Red;
             break;
         case 4:
-            m_playersColor = sf::Color::Magenta;
+            p_playersColor = sf::Color::Magenta;
             break;
         case 5:
-            m_playersColor = sf::Color::Yellow;
+            p_playersColor = sf::Color::Yellow;
             break;
         default:
-            m_playersColor = sf::Color::Black;
+            p_playersColor = sf::Color::Black;
             break;
         }
     }
     Player(std::vector<Tile> map)
     {
-        m_nickname = "MAP";
-        m_playersColor = sf::Color(255, 255, 255, 255);
+        p_nickname = "MAP";
+        p_playersColor = sf::Color(255, 255, 255, 255);
         for (auto val : map) {
-            m_ownership.emplace_back(val);
+            p_ownership.emplace_back(val);
         }
     }
 
@@ -53,12 +53,12 @@ public:
     friend bool addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long &pointsLeft);
     friend void AI(std::vector<Player> &players, unsigned long long &turn);
 
-    std::vector<Tile> ownership() { return m_ownership; }
-    sf::Color playersColor() { return m_playersColor; }
-    bool AI() { return m_AI; }
-    std::string nickname() { return m_nickname; }
+    std::vector<Tile> ownership() { return p_ownership; }
+    sf::Color playersColor() { return p_playersColor; }
+    bool AI() { return p_AI; }
+    std::string nickname() { return p_nickname; }
 
-    void addTileOwnership(Tile target) { m_ownership.emplace_back(target); }
+    void addTileOwnership(Tile target) { p_ownership.emplace_back(target); }
     void removeOwnership(Tile target);
     void clearOrigin();
 

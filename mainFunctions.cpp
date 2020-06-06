@@ -1,5 +1,4 @@
 #include "mainFunctions.h"
-#include "windows.h"
 
 void clicked(sf::Vector2i pos, std::vector<Player> &players, Tile &clickedAt)
 {
@@ -47,7 +46,7 @@ void AI(std::vector<Player> &players, unsigned long long &turn)
         }
     }
     if (possibleMoves.size() == 0) {
-        plus1ForEveryone(players[turn].m_ownership);
+        plus1ForEveryone(players[turn].p_ownership);
         turn++;
         if (turn >= players.size()) {
             turn = 1;
@@ -57,11 +56,11 @@ void AI(std::vector<Player> &players, unsigned long long &turn)
 
     std::sort(possibleMoves.begin(), possibleMoves.end(), sortByScore);
 
-    for (auto &attacker : players[turn].m_ownership) {
+    for (auto &attacker : players[turn].p_ownership) {
         if (attacker == origin) {
             for (auto &enemy : players) {
                 if (enemy.playersColor() == possibleMoves[0].getColor()) {
-                    for (auto &enemyTile : enemy.m_ownership) {
+                    for (auto &enemyTile : enemy.p_ownership) {
                         if (enemyTile == possibleMoves[0]) {
                             //Found the exact tile to fight
                             if (attacker.fight(enemyTile)) {
@@ -83,18 +82,18 @@ void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long lo
         return;
     }
 
-    //sprawdzanie gdzie kliknieto
+    //    //sprawdzanie gdzie kliknieto
 
     if (clickedAt != Tile(0)) {
         //
         for (auto &player1 : players) {
-            for (auto &tile1 : player1.m_ownership) { //
+            for (auto &tile1 : player1.p_ownership) { //
                 //
                 if (clickedAt == tile1 && !tile1.origin()) { // found clicked tile
                     // it's not the origin
                     //
                     for (auto &player2 : players) {               // looking for origin
-                        for (auto &tile2 : player2.m_ownership) { //
+                        for (auto &tile2 : player2.p_ownership) { //
                             //
                             if (tile2.origin()) // found the origin
                             {
@@ -104,7 +103,7 @@ void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long lo
                                     } else {
                                         //wlasciwy owner
                                         //FIGHT tile2 -> tile1
-                                        if (tile2.fight(tile1)) {                                          
+                                        if (tile2.fight(tile1)) {
                                             capture(tile1, player1, player2);
                                             tile2.swapOrigin(tile1);
                                         }
@@ -117,7 +116,7 @@ void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long lo
                     //origin not found
                     for (auto &tile3 :
                          players[turn]
-                             .m_ownership) { //check if player of the actual turn owns this tile
+                             .p_ownership) { //check if player of the actual turn owns this tile
                         //
                         if (clickedAt == tile3) {
                             tile3.makeOrigin();
@@ -135,15 +134,17 @@ void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long lo
 
 bool addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long &pointsLeft)
 {
-    for (auto &tile : player.m_ownership) {
-        if (tile == clickedAt && tile.getColor() == player.playersColor()) {
-            tile.valPlus1(pointsLeft);
-            std::cout << "Points Left: " << pointsLeft << std::endl;
+    if (pointsLeft > 0) {
+        for (auto &tile : player.p_ownership) {
+            if (tile == clickedAt && tile.getColor() == player.playersColor()) {
+                tile.valPlus1(pointsLeft);
+                std::cout << "Points Left: " << pointsLeft << std::endl;
+            }
         }
-    }
-    if (pointsLeft == 0) {
-        system("cls");
-        return true;
+        if (pointsLeft == 0) {
+            system("cls");
+            return true;
+        }
     }
     return false;
 }
@@ -165,13 +166,12 @@ std::vector<Player> setupPlayers(std::vector<Tile> &map, int playersInGame, int 
     }
 
     for (auto it = players.begin() + 1; it != players.end(); it++) {
-        capture(players[0].ownership()[randomizer.bounded(0, (players[0].m_ownership.size() - 1))],
+        capture(players[0].ownership()[randomizer.bounded(0, (players[0].p_ownership.size() - 1))],
                 players[0],
                 *it);
-        duplicatesCheck(players);
     }
     for (auto it = players.begin() + 1; it != players.end(); it++) {
-        it->m_ownership[0].setBegginerValue();
+        it->p_ownership[0].setBegginerValue();
     }
 
     return players;

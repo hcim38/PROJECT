@@ -14,6 +14,7 @@ private:
     bool m_origin = false;
     bool m_Null = 0;
     int m_value = 0;
+    sf::Text textValue;
 
 public:
     bool offset = 0;
@@ -21,15 +22,16 @@ public:
     Tile(sf::Texture &texture, sf::Vector2i size, sf::Vector2f pos)
     {
         setTexture(texture);
-        setPosition(pos);
         setTextureRect(sf::IntRect(0, 0, size.x, size.y));
+        setPosition(pos);
+        textValue.setCharacterSize(12);
     }
 
     Tile(bool Null)
     {
         if (!Null)
             m_Null = 1;
-
+        setColor(sf::Color(255, 255, 255, 0));
         m_position = sf::Vector2i(-10, -10);
     }
 
@@ -45,9 +47,9 @@ public:
     void makeOrigin() { m_origin = true; }
     void remOrigin() { m_origin = false; }
 
-    void setBegginerValue() { m_value = 2; }
+    void setBegginerValue() { m_value = 2; } //TOOD make protected
 
-    void valPlus1(unsigned long long &pointsLeft);
+    void valPlus1(unsigned long long &pointsLeft); //TODO make protected
     void swapOrigin(Tile &newOrigin);
     bool fight(Tile &target);    
     void textCorrection();
@@ -97,7 +99,7 @@ public:
             return false;
         }
     }
-    bool movePossibleWithOutColor(Tile &target)
+    bool movePossibleWithOutColor(Tile &target) //TODO make the ONLY movePossible method
     {
         if (m_position.y == target.m_position.y) {
             return (m_position.x == target.m_position.x + 1)
@@ -125,6 +127,23 @@ public:
             }
         }
         return false;
+    }
+
+    void drawMe(sf::RenderTarget &window, sf::Font &font)
+    {
+        window.draw(*this);
+
+        textValue.setFont(font);
+        if (m_value > 0) {
+            textValue.setString(std::to_string(m_value));
+
+            textValue.setPosition(getPosition());
+            textValue.move(11, 7);
+            if (m_value > 9) {
+                textValue.move(-3, 0);
+            }
+            window.draw(textValue);
+        }
     }
 };
 
