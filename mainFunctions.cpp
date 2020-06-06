@@ -28,7 +28,6 @@ void AI(std::vector<Player> &players, unsigned long long &turn)
 {
     std::vector<Tile> possibleMoves;
     Tile origin(0);
-    //TODO Sprawic aby AI nie bilo sie gdy nie ma szans na wygrana
     for (auto &turnOwnerTile : players[turn].ownership()) {
         if (turnOwnerTile.value() > 1) {
             for (auto &enemy : players) {
@@ -259,23 +258,6 @@ std::vector<sf::VertexArray> createLines(std::vector<Player> &players)
         }
     }
     return vec;
-}
-
-void duplicatesCheck(std::vector<Player> &Players) //chyba nie znaleziono jeszcze :V
-{
-    for (auto &PlayerOne : Players) {
-        for (auto &tileOne : PlayerOne.ownership()) {
-            for (auto &PlayerTwo : Players) {
-                if (PlayerOne.playersColor() != PlayerTwo.playersColor()) {
-                    for (auto &tileTwo : PlayerTwo.ownership()) {
-                        if (tileOne == tileTwo) {
-                            qDebug() << "DUPLIKAT KLOCA!!";
-                        }
-                    }
-                }
-            }
-        }
-    }
 }
 
 void manualConfig(std::vector<Tile> &map, std::vector<Player> &players)

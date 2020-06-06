@@ -1,42 +1,57 @@
 #include "mainFunctions.h"
 #include "windows.h"
 
+//TODO add maps
+//TODO add save game progress
+//TODO add GUI
+//TODO add pause menu GUI
+//TODO make use of player.nickname
+//TODO highscores?
+//TODO add randomization factor to fights?
+
 int main()
 {
-    //Ustawianie okna gry
-    std::cout << "Welcome to Tile Conqueror" << std::endl;
-    QResource qrTexture(":/Textures/hex-tex.png");
+    std::cout << "Welcome to Tile Conqueror" << std::endl
+              << "Game is loading the resources now." << std::endl;
+
+    QResource qrTexture(":/Textures/hex-tex.png"); //setting resources
     QResource qrFont(":/Fonts/Lato-Regular.ttf");
 
-    Tile clickedAt(0);
-    sf::Texture m_textures;
+    sf::Texture texture;
     sf::Font font;
-    std::vector<Tile> MAP;
-    sf::RectangleShape indicator(sf::Vector2f(640, 32));
-    indicator.setPosition(sf::Vector2f(0, 640 - 32));
-    sf::Text text;
-    sf::Text pointsLeftTxT;
-    std::vector<Player> players;
 
+    texture.loadFromMemory(qrTexture.data(), qrTexture.size()); //lading resources
     font.loadFromMemory(qrFont.data(), qrFont.size());
-    m_textures.loadFromMemory(qrTexture.data(), qrTexture.size());
+
+    sf::Text text; //preparing value of tile diplayed on it
     text.setFont(font);
     text.setCharacterSize(12);
+
+    sf::Text pointsLeftTxT; //preparing text for banner bellow game
     pointsLeftTxT.setFont(font);
     pointsLeftTxT.setCharacterSize(22);
     pointsLeftTxT.setStyle(sf::Text::Bold);
 
-    unsigned long long turn = 1, pointsLeft = 0;
-    bool EndOfTurn = 0, released = 0;
-    int i = 0, TilesOnScreen;
-    char choice[1];
-    sf::Clock clock;
+    sf::RectangleShape indicator(sf::Vector2f(640, 32)); //preparing banner itself
+    indicator.setPosition(sf::Vector2f(0, 640 - 32));
+
+    std::vector<Tile> MAP; //creating necessary variables
+    std::vector<Player> players;
     std::vector<sf::VertexArray> Lines;
 
-    while (1) {
-        MAP = generateTemplate(m_textures, sf::Vector2i(30, 30), 10);
+    unsigned long long turn = 1, pointsLeft = 0;
+    bool EndOfTurn = 0, released = 0;
+    int winCondition = 0, TilesOnScreen = 0;
+    char choice[1];
 
-        TilesOnScreen = MAP.size();
+    sf::Clock clock;
+    Tile clickedAt(0);
+
+    while (1) { //game loaded
+
+        MAP = generateTemplate(texture, sf::Vector2i(30, 30), 10);
+
+        TilesOnScreen = MAP.size(); //win condition
 
         std::cout << std::endl
                   << "Before we start we need to setup the game" << std::endl
@@ -56,8 +71,8 @@ int main()
             }
 
             if (choice[0] == '1') {
-                players = setupPlayers(MAP);
                 system("cls");
+                players = setupPlayers(MAP);                
                 break;
 
             } else if (choice[0] == '2') {
@@ -71,13 +86,13 @@ int main()
             }
         }
 
-        Lines = createLines(players);            //
+        Lines = createLines(players);            //Lines indicating possible moves
         ShowWindow(GetConsoleWindow(), SW_HIDE); //Hide console after config
-        sf::RenderWindow window(sf::VideoMode(640, 640), "Tile Conqueror"); //
+        sf::RenderWindow window(sf::VideoMode(640, 640), "Tile Conqueror");
         window.setFramerateLimit(60);
         window.setVerticalSyncEnabled(1);
 
-        while (window.isOpen()) {
+        while (window.isOpen()) { //config complete, window created, game starts
             sf::Event event;
             while (window.pollEvent(event)) {
                 if (event.type == sf::Event::Closed) {
@@ -85,25 +100,22 @@ int main()
                 }
                 if (event.type == event.MouseButtonReleased
                     && event.mouseButton.button == sf::Mouse::Left) {
-                    clicked(sf::Mouse::getPosition(window), //wywyolanie reakcji na kliknecie
-                            players,
-                            clickedAt);
+                    clicked(sf::Mouse::getPosition(window), players, clickedAt);
                 }
-                if (event.type == event.KeyReleased && event.key.code == sf::Keyboard::Space) {
-                    if (!players[turn].AI()) {
-                        for (auto &player : players) {
-                            if (player.ownership().size() > 0) {
-                                player.clearOrigin();
-                            }
+                if (event.type == event.KeyReleased && event.key.code == sf::Keyboard::Space
+                    && !players[turn].AI()) {
+                    for (auto &player : players) {
+                        if (player.ownership().size() > 0) {
+                            player.clearOrigin();
                         }
-                        pointsLeft = players[turn].ownership().size();
-                        if (EndOfTurn) {
-                            released = 1;
-                        }
-                        EndOfTurn = 1;
-                        std::cout << "Points Left for player: " << players[turn].nickname() << " "
-                                  << pointsLeft << std::endl;
                     }
+
+                    pointsLeft = players[turn].ownership().size();
+
+                    if (EndOfTurn) {
+                        released = 1;
+                    }
+                    EndOfTurn = 1;
                 }
             }
 
@@ -112,16 +124,17 @@ int main()
             //uczytelnic zarzadzanie tura
 
             window.clear(sf::Color::Black);
-            for (auto &line : Lines) {
+
+            for (auto &line : Lines) { //drawing lines bellow everthing
                 window.draw(line);
             }
 
             for (auto &player : players) { //korekta po nieuzywanych podswietleniach
-                player.textCorrection();
+                player.textCorrection(); //TODO przyciemniac kloce z ktorych oraz na ktore ruch nie jest mozliwy
                 player.colorCorrection();
             }
 
-            if (!EndOfTurn) {
+            if (!EndOfTurn) { ///SYF
                 Turnmanager(players, clickedAt, turn);
             } else {
                 pointsLeftTxT.setString(std::to_string(pointsLeft));
@@ -147,15 +160,14 @@ int main()
                 if (turn >= players.size()) {
                     turn = 1;
                 }
-            }
+            } ///End Of SYF
 
-            released = 0;
+            released = 0; ///???
             clickedAt = Tile(0);
             indicator.setFillColor(players[turn].playersColor());
 
-            //duplicatesCheck(players);
-
             //tutaj podswietlam
+            //moze funkcja lub uczytelnienie po prostu
             for (auto &playerM : players) {
                 for (auto &tileM : playerM.m_ownership) {
                     //
@@ -177,7 +189,7 @@ int main()
                 }
             }
 
-            //rysowanko
+            //rysowanko SYF again
 
             for (auto player : players) {
                 for (auto val : player.ownership()) {
@@ -194,7 +206,7 @@ int main()
                 }
             }
 
-            window.draw(indicator);
+            window.draw(indicator); //TODO funkcja banner menager
 
             if (EndOfTurn) {
                 pointsLeftTxT.setString("Points Left for player " + players[turn].nickname()
@@ -214,24 +226,28 @@ int main()
             window.draw(pointsLeftTxT);
             window.display(); //koniec
 
-            if (TilesOnScreen == players[turn].ownership().size())
-                i++;
-            if (i >= 2)
+            if (TilesOnScreen == players[turn].ownership().size()) //win condition
+                winCondition++;
+            if (winCondition >= 2)
                 break;
-        }
+        } ///Game ended
+
         window.close();
         ShowWindow(GetConsoleWindow(), SW_SHOW);
 
         if (TilesOnScreen == players[turn].ownership().size()) {
             std::cout << "Looks like player " << players[turn].nickname() << " has won the game!"
                       << std::endl;
+        } else {
+            std::cout << "No one has won the game?" << std::endl;
         }
-        std::cout << std::endl << "Press ENTER to play again or 0 to exit";
+        std::cout << std::endl << "Press ENTER to play again or 0 to exit" << std::endl;
+
         while (1) {
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
                 MAP.clear();
                 players.clear();
-                i = 0;
+                winCondition = 0;
             }
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num0))
                 return 0;
