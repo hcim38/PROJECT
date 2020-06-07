@@ -1,154 +1,161 @@
 #include "mainFunctions.h"
 
-//WARNING nie do końca widoczna zasadność istnienia klasy TileMap
-//BUG mozliwe jest przerwanie czyjejs tury klawiszem 'SPACE'
-
-void duplicatesCheck(std::vector<Player> &Players) //chyba nie znaleziono jeszcze :V
-{
-    for (auto &PlayerOne : Players) {
-        for (auto &tileOne : PlayerOne.ownership()) {
-            for (auto &PlayerTwo : Players) {
-                if (PlayerOne.playersColor() != PlayerTwo.playersColor()) {
-                    for (auto &tileTwo : PlayerTwo.ownership()) {
-                        if (tileOne == tileTwo) {
-                            std::cout << "DUPLIKAT KLOCA!!" << std::endl;
-                            system("pause");
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-std::vector<Tile> loadMap(sf::Texture &m_textures, sf::Vector2i tileSize, unsigned int mapSize)
-
-{
-    std::vector<Tile> m_objects;
-
-    for (unsigned int i = 0; i < mapSize; ++i)
-        for (unsigned int j = 0; j < mapSize;
-             ++j) { //petla wypelniajaca vector do ustalonych rozmiarow
-            Tile temp(m_textures,
-                      tileSize,
-                      sf::Vector2f(i * tileSize.x * 2 + 16, 2 * j * tileSize.y + 16));
-            temp.tilesize(tileSize);           //ustalenie rozmiaru obiektu
-            temp.position(sf::Vector2i(i, j)); //ustalenie pozycji
-            m_objects.emplace_back(temp);
-        }
-
-    return m_objects;
-}
+//TODO add distribution of forces bar to Banner
+//TODO add maps
+//TODO add save game progress
+//TODO add GUI
+//TODO add pause menu GUI
+//TODO make use of player.nickname
+//TODO highscores?
+//TODO add randomization factor to fights?
 
 int main()
 {
-    //Ustawianie okna gry
-    sf::RenderWindow window(sf::VideoMode(640, 640), "Tilemap");
-    window.setFramerateLimit(240);
-    window.setVerticalSyncEnabled(1);
+    std::cout << "Welcome to Tile Conqueror" << std::endl
+              << "Game is loading the resources now." << std::endl;
 
-    Tile clickedAt(0);
-    sf::Texture m_textures;
-    m_textures.loadFromFile("tiles.png");
+    QResource qrTexture(":/Textures/hex-tex.png"); //setting resources
+    QResource qrFont(":/Fonts/Lato-Regular.ttf");
 
-    std::vector<Tile> MAP;
-    MAP = loadMap(m_textures, sf::Vector2i(32, 32), 10);
+    sf::Texture texture;
+    sf::Font font;
 
-    std::vector<Player> players = setupPlayers(MAP);
+    texture.loadFromMemory(qrTexture.data(), qrTexture.size()); //lading resources
+    font.loadFromMemory(qrFont.data(), qrFont.size());
 
-    sf::RectangleShape indicator(sf::Vector2f(16, 16));
+    Banner banner(sf::Vector2f(0, 640 - 32), sf::Vector2f(640, 32), font);
+
+    std::vector<Tile> MAP; //creating necessary variables
+    std::vector<Player> players;
+    std::vector<sf::VertexArray> Lines;
 
     unsigned long long turn = 1, pointsLeft = 0;
-    bool EndOfTurn = 0, released = 0;
-    sf::Text text;
-    sf::Font font;
-    font.loadFromFile("Lato-Regular.ttf");
-    text.setFont(font);
-    text.setCharacterSize(8);
-    std::cout << std::endl << "Now playing:" << players[turn].nickname() << std::endl << std::endl;
-    while (window.isOpen()) {
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
-                window.close();
-            if (event.type == event.MouseButtonReleased //jezeli kliknieto LMB
-                && event.mouseButton.button == sf::Mouse::Left) {
-                clicked(sf::Mouse::getPosition(window), //wywyolanie reakcji na kliknecie
-                        players,
-                        clickedAt);
+    bool pointsGiveAway = 0;
+    unsigned int winCondition = 0, TilesOnScreen = 0;
+    char choice[1];
+
+    sf::Clock clock;
+    Tile clickedAt(0);
+
+    while (1) { //game loaded
+
+        MAP = generateTemplate(texture, sf::Vector2i(30, 30), 10);
+
+        TilesOnScreen = MAP.size(); //win condition
+
+        std::cout << std::endl
+                  << "Before we start we need to setup the game" << std::endl
+                  << std::endl
+                  << "Press '1' if you would like to use default settings" << std::endl
+                  << "OR" << std::endl
+                  << "Press '2' if you would like to set up the game manualy" << std::endl;
+
+        while (1) {
+            std::cin >> choice;
+            if (choice[0] == '1') {
+                system("cls");
+                players = setupPlayers(MAP);
+                break;
+            } else if (choice[0] == '2') {
+                system("cls");
+                manualConfig(MAP, players);
+                system("cls");
+                break;
+            } else {
+                std::cout << "Wait, that's illegal!" << std::endl;
             }
-            if (event.type == event.KeyReleased && event.key.code == sf::Keyboard::Space) {
-                for (auto &player : players) {
-                    for (auto &tile : player.m_ownership) {
-                        tile.setorigin(false);
+        }
+
+        Lines = createLines(players);            //Lines indicating possible moves
+        ShowWindow(GetConsoleWindow(), SW_HIDE); //Hide console after config
+        sf::RenderWindow window(sf::VideoMode(640, 640), "Tile Conqueror");
+        window.setFramerateLimit(60);
+        window.setVerticalSyncEnabled(1);
+
+        while (window.isOpen()) { //config complete, window created, game starts
+            sf::Event event;
+            while (window.pollEvent(event)) {
+                if (event.type == sf::Event::Closed) {
+                    window.close();
+                }
+                if (event.type == event.MouseButtonReleased
+                    && event.mouseButton.button == sf::Mouse::Left) {
+                    clicked(sf::Mouse::getPosition(window), players, clickedAt);
+                }
+                if (event.type == event.KeyReleased && event.key.code == sf::Keyboard::Space
+                    && !players[turn].AI()) {
+                    if (pointsGiveAway) {
+                        nextTurn(turn, players);
+                        pointsGiveAway = 0;
+                        //if points left add 1 point from the remaining to every tile IF possible TODO long
+                        continue;
                     }
+                    players[turn].clearOrigin();
+                    pointsGiveAway = 1;
+                    pointsLeft = players[turn].ownership().size();
                 }
-                pointsLeft = players[turn].m_ownership.size();
-                if (EndOfTurn) {
-                    released = 1;
-                }
-                EndOfTurn = 1;
-                std::cout << "Points Left for player:" << players[turn].nickname() << " "
-                          << pointsLeft << std::endl;
             }
-        }
 
-        //NOTE magia wyswietlania
-        window.clear(sf::Color::Black);
+            window.clear(sf::Color::Black);
 
-        for (auto &player : players) {
-            player.textCorrection();
-            player.colorCorrection();
-        }
+            for (auto &line : Lines) {
+                window.draw(line);
+            }
 
-        if (!EndOfTurn) {
-            Turnmanager(players, clickedAt, turn);
+            for (auto &player : players) {
+                player.textCorrection();
+                player.colorCorrection();
+            }
+
+            if (!pointsGiveAway) {
+                Turnmanager(players, clickedAt, turn);
+            } else {
+                addPointsToTiles(clickedAt, players[turn], pointsLeft);
+            }
+
+            hilightOrigin(players[turn]);
+
+            clickedAt = Tile(0);
+
+            ////
+
+            for (auto player : players) {
+                for (auto val : player.ownership()) {
+                    val.drawMe(window, font);
+                }
+            }
+
+            banner.refreshBanner(pointsLeft, players[turn], pointsGiveAway);
+            banner.drawMe(window);
+
+            window.display(); //koniec
+
+            if (TilesOnScreen == players[turn].ownership().size()) //win condition
+                winCondition++;
+            if (winCondition >= 2)
+                break;
+        } ///Game ended
+
+        window.close();
+        ShowWindow(GetConsoleWindow(), SW_SHOW);
+
+        if (TilesOnScreen == players[turn].ownership().size()) {
+            std::cout << "Looks like player " << players[turn].nickname() << " has won the game!"
+                      << std::endl;
         } else {
-            if (addPointsToTiles(clickedAt, players[turn], pointsLeft) || (EndOfTurn && released)) {
-                turn++;
-                EndOfTurn = 0;
-                if (turn >= players.size()) {
-                    turn = 1;
-                }
-                while (players[turn].m_ownership.size() == 0) {
-                    turn++;
-                    if (turn >= players.size()) {
-                        turn = 1;
-                    }
-                }
-                std::cout << std::endl
-                          << "Now playing:" << players[turn].nickname() << std::endl
-                          << std::endl;
-            }
+            std::cout << "No one has won the game?" << std::endl;
         }
+        std::cout << std::endl << "Press ENTER to play again or 0 to exit" << std::endl;
 
-        if (players[turn].m_ownership.size() == 0) {
-            turn++;
-            if (turn >= players.size()) {
-                turn = 1;
+        while (1) {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
+                MAP.clear();
+                players.clear();
+                winCondition = 0;
+                break;
             }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num0))
+                return 0;
         }
-
-        released = 0;
-        clickedAt = Tile(0);
-        indicator.setFillColor(players[turn].playersColor());
-
-        duplicatesCheck(players);
-
-        //rysowanko
-
-        for (auto player : players) {
-            for (auto val : player.m_ownership) {
-                window.draw(val);
-                text.setString(std::to_string(val.m_value));
-                text.setPosition(val.getPosition());
-                text.move(13, 11);
-                window.draw(text);
-            }
-        }
-        window.draw(indicator);
-        window.display();
     }
-
-    return 0;
 }

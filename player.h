@@ -2,69 +2,79 @@
 #define PLAYER_H
 #include "tile.h"
 
-class Player //NOTE Gracz i zestaw jego funkcji
+class Player
 {
 private:
-    bool m_AI;
-    std::string m_nickname;
-    sf::Color m_playersColor;
-    std::vector<Tile> m_ownership;
+    bool p_AI;
+    std::string p_nickname;
+    sf::Color p_playersColor;
+    std::vector<Tile> p_ownership;
 
 public:
-    friend std::vector<Player> setupPlayers(std::vector<Tile> &map); //FIXME TEMP
-    friend int main();
-    friend void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long long &turn);
-    friend bool addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long &pointsLeft);
-    friend void AI(std::vector<Player> &players, unsigned long long &turn);
-
     Player(std::string nickname, int posInVec, bool AI = 0)
     {
-        m_AI = AI;
-        m_nickname = nickname;
+        p_AI = AI;
+        p_nickname = nickname;
         switch (posInVec) {
-        case 0:
-            m_playersColor = sf::Color::Blue;
-            break;
         case 1:
-            m_playersColor = sf::Color::Green;
+            p_playersColor = sf::Color::Cyan;
+            p_playersColor.a = 150;
             break;
         case 2:
-            m_playersColor = sf::Color::Red;
+            p_playersColor = sf::Color::Green;
+            p_playersColor.a = 150;
             break;
         case 3:
-            m_playersColor = sf::Color::Magenta;
+            p_playersColor = sf::Color::Red;
+            p_playersColor.a = 150;
             break;
         case 4:
-            m_playersColor = sf::Color::Yellow;
+            p_playersColor = sf::Color::Magenta;
+            p_playersColor.a = 150;
+            break;
+        case 5:
+            p_playersColor = sf::Color::Yellow;
+            p_playersColor.a = 150;
             break;
         default:
-            m_playersColor = sf::Color::Black;
+            p_playersColor = sf::Color::Black;
+            p_playersColor.a = 150;
+
             break;
         }
     }
     Player(std::vector<Tile> map)
     {
-        m_nickname = "MAP";
-        m_playersColor = sf::Color(255, 255, 255, 255);
+        p_nickname = "MAP";
+        p_playersColor = sf::Color(255, 255, 255, 255);
         for (auto val : map) {
-            m_ownership.emplace_back(val);
+            p_ownership.emplace_back(val);
         }
     }
 
-    std::vector<Tile> ownership() { return m_ownership; }
-    sf::Color playersColor() { return m_playersColor; }
-    bool AI() { return m_AI; }
-    std::string nickname() { return m_nickname; }
+    friend std::vector<Player> setupPlayers(std::vector<Tile> &map,
+                                            int playersInGame,
+                                            int AIplayersInGame);
+    friend int main();
+    friend void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long long &turn);
+    friend bool addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long &pointsLeft);
+    friend void AI(std::vector<Player> &players, unsigned long long &turn);
+    friend void hilightOrigin(Player &player);
 
-    void addTileOwnership(Tile target) { m_ownership.emplace_back(target); }
-    void removeOwnership(Tile target)
+    std::vector<Tile> ownership() { return p_ownership; }
+    sf::Color playersColor() { return p_playersColor; }
+    sf::Color playersColorH()
     {
-        for (auto it = m_ownership.begin(); it != m_ownership.end(); it++)
-            if (*it == target) {
-                m_ownership.erase(it);
-                break;
-            }
+        sf::Color col = p_playersColor;
+        col.a = 255;
+        return col;
     }
+    bool AI() { return p_AI; }
+    std::string nickname() { return p_nickname; }
+
+    void addTileOwnership(Tile target) { p_ownership.emplace_back(target); }
+    void removeOwnership(Tile target);
+    void clearOrigin();
 
     void colorCorrection();
     void textCorrection();
