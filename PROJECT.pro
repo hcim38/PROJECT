@@ -5,12 +5,14 @@ CONFIG += console c++17
 
 
 SOURCES += \
+        Banner.cpp \
         main.cpp \
         mainFunctions.cpp \
         player.cpp \
         tile.cpp
 
 HEADERS += \
+    banner.h \
     mainFunctions.h \
     player.h \
     tile.h

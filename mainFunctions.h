@@ -1,5 +1,6 @@
 #ifndef MAINFUNCTIONS_H
 #define MAINFUNCTIONS_H
+#include "banner.h"
 #include "player.h"
 #include "windows.h"
 #include <QRandomGenerator>
@@ -19,4 +20,6 @@ std::vector<Player> setupPlayers(std::vector<Tile> &map,
                                  int AIplayersInGame = 3);
 std::vector<sf::VertexArray> createLines(std::vector<Player> &players);
 void manualConfig(std::vector<Tile> &map, std::vector<Player> &players);
+void nextTurn(unsigned long long &turn, std::vector<Player> &players);
+void hilightOrigin(Player &player);
 #endif // MAINFUNCTIONS_H

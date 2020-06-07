@@ -18,21 +18,28 @@ public:
         switch (posInVec) {
         case 1:
             p_playersColor = sf::Color::Cyan;
+            p_playersColor.a = 150;
             break;
         case 2:
             p_playersColor = sf::Color::Green;
+            p_playersColor.a = 150;
             break;
         case 3:
             p_playersColor = sf::Color::Red;
+            p_playersColor.a = 150;
             break;
         case 4:
             p_playersColor = sf::Color::Magenta;
+            p_playersColor.a = 150;
             break;
         case 5:
             p_playersColor = sf::Color::Yellow;
+            p_playersColor.a = 150;
             break;
         default:
             p_playersColor = sf::Color::Black;
+            p_playersColor.a = 150;
+
             break;
         }
     }
@@ -52,9 +59,16 @@ public:
     friend void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long long &turn);
     friend bool addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long &pointsLeft);
     friend void AI(std::vector<Player> &players, unsigned long long &turn);
+    friend void hilightOrigin(Player &player);
 
     std::vector<Tile> ownership() { return p_ownership; }
     sf::Color playersColor() { return p_playersColor; }
+    sf::Color playersColorH()
+    {
+        sf::Color col = p_playersColor;
+        col.a = 255;
+        return col;
+    }
     bool AI() { return p_AI; }
     std::string nickname() { return p_nickname; }
 

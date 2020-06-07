@@ -19,21 +19,8 @@ private:
 public:
     bool offset = 0;
 
-    Tile(sf::Texture &texture, sf::Vector2i size, sf::Vector2f pos)
-    {
-        setTexture(texture);
-        setTextureRect(sf::IntRect(0, 0, size.x, size.y));
-        setPosition(pos);
-        textValue.setCharacterSize(12);
-    }
-
-    Tile(bool Null)
-    {
-        if (!Null)
-            m_Null = 1;
-        setColor(sf::Color(255, 255, 255, 0));
-        m_position = sf::Vector2i(-10, -10);
-    }
+    Tile(sf::Texture &texture, sf::Vector2i size, sf::Vector2f pos);
+    Tile(bool Null);
 
     friend void plus1ForEveryone(std::vector<Tile> &tiles);
     friend std::vector<Tile> generateTemplate(sf::Texture &m_textures,
@@ -70,7 +57,6 @@ public:
     }
     bool movePossible(Tile &target)
     {
-        if (getColor() != target.getColor()) {
             if (m_position.y == target.m_position.y) {
                 return (m_position.x == target.m_position.x + 1)
                        || (m_position.x == target.m_position.x - 1);
@@ -97,36 +83,6 @@ public:
                 }
             }
             return false;
-        }
-    }
-    bool movePossibleWithOutColor(Tile &target) //TODO make the ONLY movePossible method
-    {
-        if (m_position.y == target.m_position.y) {
-            return (m_position.x == target.m_position.x + 1)
-                   || (m_position.x == target.m_position.x - 1);
-        }
-        if (!offset) {
-            if (m_position.y == target.m_position.y + 1) {
-                return (m_position.x == target.m_position.x + 1)
-                       || (m_position.x == target.m_position.x);
-            }
-
-            if (m_position.y == target.m_position.y - 1) {
-                return (m_position.x == target.m_position.x + 1)
-                       || (m_position.x == target.m_position.x);
-            }
-        } else {
-            if (m_position.y == target.m_position.y + 1) {
-                return (m_position.x == target.m_position.x - 1)
-                       || (m_position.x == target.m_position.x);
-            }
-
-            if (m_position.y == target.m_position.y - 1) {
-                return (m_position.x == target.m_position.x - 1)
-                       || (m_position.x == target.m_position.x);
-            }
-        }
-        return false;
     }
 
     void drawMe(sf::RenderTarget &window, sf::Font &font)

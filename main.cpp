@@ -1,5 +1,6 @@
 #include "mainFunctions.h"
 
+//TODO add distribution of forces bar to Banner
 //TODO add maps
 //TODO add save game progress
 //TODO add GUI
@@ -7,65 +8,6 @@
 //TODO make use of player.nickname
 //TODO highscores?
 //TODO add randomization factor to fights?
-
-void nextTurn(unsigned long long &turn, std::vector<Player> &players)
-{
-    turn++;
-    if (turn >= players.size()) {
-        turn = 1;
-    }
-
-    while (players[turn].ownership().size() == 0) {
-        turn++;
-        if (turn >= players.size()) {
-            turn = 1;
-        }
-    }
-}
-
-class Banner : public sf::RectangleShape
-{
-private:
-    sf::Text p_text;
-    sf::Font p_font;
-
-public:
-    Banner(sf::Vector2f pos, sf::Vector2f size, sf::Font &font) : p_font(font)
-    {
-        setSize(size);
-        setPosition(pos);
-        p_text.setFont(p_font);
-        p_text.setCharacterSize(24);
-        p_text.setStyle(sf::Text::Bold);
-    }
-    ~Banner() {}
-
-    void refreshBanner(unsigned long long &pointsLeft, Player &turnOwner, bool &pointsGiveAway)
-    {
-        setFillColor(turnOwner.playersColor());
-
-        if (pointsGiveAway) {
-            p_text.setString("Points Left for player " + turnOwner.nickname() + ":   "
-                             + std::to_string(pointsLeft));
-        } else if (!turnOwner.AI()) {
-            p_text.setString("Now playing " + turnOwner.nickname());
-        } else if (turnOwner.AI()) {
-            p_text.setString("Computer is making its moves " + turnOwner.nickname());
-        }
-
-        p_text.setPosition(((getPosition().x + (getLocalBounds().width / 2))
-                            - (p_text.getLocalBounds().width / 2)),
-                           ((getPosition().y + (getLocalBounds().height / 2))
-                            - p_text.getLocalBounds().height / 2)
-                               - 5);
-    }
-
-    void drawMe(sf::RenderTarget &window)
-    {
-        window.draw(*this);
-        window.draw(p_text);
-    }
-};
 
 int main()
 {
@@ -108,27 +50,17 @@ int main()
                   << "OR" << std::endl
                   << "Press '2' if you would like to set up the game manualy" << std::endl;
 
-        std::cin >> choice;
-
         while (1) {
-            if (std::cin.fail()) {
-                std::cin.clear();
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                std::cout << "Wait, that's illegal!" << std::endl << "Bots: ";
-                std::cin >> choice;
-            }
-
+            std::cin >> choice;
             if (choice[0] == '1') {
                 system("cls");
-                players = setupPlayers(MAP);                
+                players = setupPlayers(MAP);
                 break;
-
             } else if (choice[0] == '2') {
                 system("cls");
                 manualConfig(MAP, players);
                 system("cls");
                 break;
-
             } else {
                 std::cout << "Wait, that's illegal!" << std::endl;
             }
@@ -158,87 +90,40 @@ int main()
                         //if points left add 1 point from the remaining to every tile IF possible TODO long
                         continue;
                     }
-
+                    players[turn].clearOrigin();
                     pointsGiveAway = 1;
                     pointsLeft = players[turn].ownership().size();
                 }
             }
 
-            //TODO poprawic kolejnosc wywolywania funkcji
-            //ogolnie uprzatnac
-            //uczytelnic zarzadzanie tura
-
             window.clear(sf::Color::Black);
 
-            for (auto &line : Lines) { //drawing lines bellow everthing
+            for (auto &line : Lines) {
                 window.draw(line);
             }
 
-            for (auto &player : players) { //korekta po nieuzywanych podswietleniach
-                player.textCorrection(); //TODO przyciemniac kloce z ktorych oraz na ktore ruch nie jest mozliwy
+            for (auto &player : players) {
+                player.textCorrection();
                 player.colorCorrection();
             }
 
             if (!pointsGiveAway) {
                 Turnmanager(players, clickedAt, turn);
             } else {
-                if (addPointsToTiles(clickedAt, players[turn], pointsLeft)) {
-                }
+                addPointsToTiles(clickedAt, players[turn], pointsLeft);
             }
+
+            hilightOrigin(players[turn]);
 
             clickedAt = Tile(0);
 
-            //            indicator.setFillColor(players[turn].playersColor());
-
-            //tutaj podswietlam
-            //moze funkcja lub uczytelnienie po prostu
-            //            for (auto &playerM : players) {
-            //                for (auto &tileM : playerM.m_ownership) {
-            //                    //
-            //                    if (tileM.origin()) {
-            //                        sf::Color actual;
-            //                        for (auto &player : players) {
-            //                            for (auto &tile : player.m_ownership) {
-            //                                //
-            //                                if (tileM.movePossible(tile) && tileM.value() > 1
-            //                                    && tileM.getColor() != tile.getColor()) {
-            //                                    actual = tile.getColor();
-            //                                    actual.a = 150;
-            //                                    tile.setColor(actual);
-            //                                }
-            //                            }
-            //                        }
-            //                        break;
-            //                    }
-            //                }
-            //            }
-
-            //rysowanko
+            ////
 
             for (auto player : players) {
                 for (auto val : player.ownership()) {
                     val.drawMe(window, font);
                 }
             }
-
-            //            window.draw(indicator); //TODO funkcja banner menager
-
-            //            if (EndOfTurn) {
-            //                pointsLeftTxT.setString("Points Left for player " + players[turn].nickname()
-            //                                        + ":   " + std::to_string(pointsLeft));
-            //            } else if (!players[turn].AI()) {
-            //                pointsLeftTxT.setString("Now playing " + players[turn].nickname());
-            //            } else if (players[turn].AI()) {
-            //                pointsLeftTxT.setString("Computer is making its moves" + players[turn].nickname());
-            //            }
-            //            pointsLeftTxT.setPosition(((indicator.getGlobalBounds().left
-            //                                        + (indicator.getLocalBounds().width / 2))
-            //                                       - (pointsLeftTxT.getLocalBounds().width / 2)),
-            //                                      ((indicator.getGlobalBounds().top
-            //                                        + (indicator.getLocalBounds().height / 2))
-            //                                       - pointsLeftTxT.getLocalBounds().height / 2)
-            //                                          - 5);
-            //            window.draw(pointsLeftTxT);
 
             banner.refreshBanner(pointsLeft, players[turn], pointsGiveAway);
             banner.drawMe(window);
@@ -267,6 +152,7 @@ int main()
                 MAP.clear();
                 players.clear();
                 winCondition = 0;
+                break;
             }
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num0))
                 return 0;
