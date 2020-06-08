@@ -2,7 +2,7 @@
 
 //TODO add distribution of forces bar to Banner
 //TODO add save game progress
-////TODO add GUI
+
 //TODO add pause menu GUI
 //TODO make use of player.nickname
 //TODO highscores?
@@ -10,6 +10,7 @@
 
 int game1(Game &game)
 {
+    game.winCondition = 0;
     sf::RenderWindow window(sf::VideoMode(640, 640), "Tile Conqueror");
     window.setFramerateLimit(60);
     window.setVerticalSyncEnabled(1);

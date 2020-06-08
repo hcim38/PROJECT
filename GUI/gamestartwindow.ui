@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>613</width>
-    <height>700</height>
+    <height>774</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Config</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
@@ -333,6 +333,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="defaultButton">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>Default</string>
            </property>
@@ -340,6 +343,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="mapEditorButton">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>Map editor</string>
            </property>

@@ -15,7 +15,7 @@ gameStartWindow::~gameStartWindow()
     delete ui;
 }
 
-void gameStartWindow::captureRandomTiles(std::vector<Player> &players)
+void gameStartWindow::captureRandomTiles(std::vector<Player> &players, Game &game)
 {
     game.MAP = game.generateTemplate(game.texture, sf::Vector2(30, 30), 10);
     players[0].p_ownership = game.MAP;
@@ -81,36 +81,39 @@ void gameStartWindow::on_Player5Active_clicked()
 
 void gameStartWindow::on_startButton_clicked()
 {
-    players.emplace_back(Player("MAP", 0));
+    Game game;
+    std::vector<Player> TEMP;
+    TEMP.emplace_back(Player("MAP", 0));
     int i = 1;
     if (ui->groupBox_1->isEnabled()) {
-        players.emplace_back(
+        TEMP.emplace_back(
             Player((ui->playerNickname1->text()), i, ui->playerComputer1->isChecked()));
         i++;
     }
     if (ui->groupBox_2->isEnabled()) {
-        players.emplace_back(
+        TEMP.emplace_back(
             Player((ui->playerNickname2->text()), i, ui->playerComputer2->isChecked()));
         i++;
     }
     if (ui->groupBox_3->isEnabled()) {
-        players.emplace_back(
+        TEMP.emplace_back(
             Player((ui->playerNickname3->text()), i, ui->playerComputer3->isChecked()));
         i++;
     }
     if (ui->groupBox_4->isEnabled()) {
-        players.emplace_back(
+        TEMP.emplace_back(
             Player((ui->playerNickname4->text()), i, ui->playerComputer4->isChecked()));
         i++;
     }
     if (ui->groupBox_5->isEnabled()) {
-        players.emplace_back(
+        TEMP.emplace_back(
             Player((ui->playerNickname5->text()), i, ui->playerComputer5->isChecked()));
         i++;
     }
 
-    captureRandomTiles(players);
-    game.players = players;
-    destroy(this);
+    captureRandomTiles(TEMP, game);
+    game.players = TEMP;
+    hide();
     game1(game);
+    show();
 }
