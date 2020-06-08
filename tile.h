@@ -2,13 +2,18 @@
 #define TILE_H
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
+
 #include <iostream>
+
+#include <QRandomGenerator>
 #include <QResource>
-#include <QtDebug>
+#include <QString>
+
+#include "windows.h"
 
 class Tile : public sf::Sprite
 {
-private:
+public:
     sf::Vector2i m_tilesize; //wielkosc i pozycja kloca
     sf::Vector2i m_position;
     bool m_origin = false;
@@ -20,7 +25,7 @@ public:
     bool offset = 0;
 
     Tile(sf::Texture &texture, sf::Vector2i size, sf::Vector2f pos);
-    Tile(bool Null);
+    Tile();
 
     friend void plus1ForEveryone(std::vector<Tile> &tiles);
     friend std::vector<Tile> generateTemplate(sf::Texture &m_textures,

@@ -1,19 +1,26 @@
 QT += core
+QT += widgets
 TEMPLATE = app
-CONFIG += console c++17
+CONFIG += c++17
 
 
 
 SOURCES += \
         Banner.cpp \
+        game.cpp \
+        gameMain.cpp \
+        gamestartwindow.cpp \
         main.cpp \
-        mainFunctions.cpp \
+        mapEditorMode.cpp \
         player.cpp \
         tile.cpp
 
 HEADERS += \
     banner.h \
-    mainFunctions.h \
+    game.h \
+    gameMain.h \
+    gamestartwindow.h \
+    mapEditorMode.h \
     player.h \
     tile.h
 
@@ -27,4 +34,7 @@ CONFIG(debug, debug|release){
 
 RESOURCES += \
     Resources.qrc
+
+FORMS += \
+    gamestartwindow.ui
 

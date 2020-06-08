@@ -1,6 +1,29 @@
-#include "mainFunctions.h"
+#include "game.h"
 
-void clicked(sf::Vector2i pos, std::vector<Player> &players, Tile &clickedAt)
+Game::Game()
+{
+    qrTexturePtr = new QResource(":/Textures/hex-tex.png");
+    qrFontPtr = new QResource(":/Fonts/Lato-Regular.ttf");
+
+    texture.loadFromMemory(qrTexturePtr->data(), qrTexturePtr->size()); //lading resources
+    font.loadFromMemory(qrFontPtr->data(), qrFontPtr->size());
+
+    delete qrTexturePtr;
+    delete qrFontPtr;
+
+    clickedAt = Tile();
+
+    MAP = generateTemplate(texture, sf::Vector2i(30, 30), 10);
+
+    players = setupPlayers(MAP);
+
+    TilesOnScreen = MAP.size(); //win condition
+
+    banner = Banner(sf::Vector2f(0, 640 - 32), sf::Vector2f(640, 32), font);
+    Lines = createLines(players); //Lines indicating possible moves
+}
+
+void Game::clicked(sf::Vector2i pos, std::vector<Player> &players, Tile &clickedAt)
 {
     for (auto &player : players) {
         for (auto &val : player.ownership()) {
@@ -12,7 +35,7 @@ void clicked(sf::Vector2i pos, std::vector<Player> &players, Tile &clickedAt)
     }
 }
 
-void capture(Tile target, Player &loser, Player &winner)
+void Game::capture(Tile target, Player &loser, Player &winner)
 {
     winner.addTileOwnership(target);
     loser.removeOwnership(target);
@@ -23,10 +46,11 @@ bool sortByScore(const Tile &one, const Tile &two)
     return one.value() < two.value();
 }
 
-void AI(std::vector<Player> &players, unsigned long long &turn)
+void Game::AI(std::vector<Player> &players, unsigned long long &turn)
 {
     std::vector<Tile> possibleMoves;
-    Tile origin(0);
+    Tile origin;
+
     for (auto &turnOwnerTile : players[turn].ownership()) {
         if (turnOwnerTile.value() > 1) {
             for (auto &enemy : players) {
@@ -45,6 +69,7 @@ void AI(std::vector<Player> &players, unsigned long long &turn)
             }
         }
     }
+
     if (possibleMoves.size() == 0) {
         plus1ForEveryone(players[turn].p_ownership);
         turn++;
@@ -64,7 +89,7 @@ void AI(std::vector<Player> &players, unsigned long long &turn)
                         if (enemyTile == possibleMoves[0]) {
                             //Found the exact tile to fight
                             if (attacker.fight(enemyTile)) {
-                                capture(possibleMoves[0], enemy, players[turn]);
+                                capture(enemyTile, enemy, players[turn]);
                             }
                             break;
                         }
@@ -75,14 +100,14 @@ void AI(std::vector<Player> &players, unsigned long long &turn)
     }
 }
 
-void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long long &turn)
+void Game::Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long long &turn)
 {
     if (players[turn].AI()) {
         AI(players, turn);
         return;
     }
 
-    if (clickedAt == Tile(0))
+    if (clickedAt == Tile())
         return;
     if (clickedAt.getColor() == players[turn].playersColorH())
         return;
@@ -126,7 +151,7 @@ void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long lo
     }
 }
 
-bool addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long &pointsLeft)
+bool Game::addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long &pointsLeft)
 {
     if (pointsLeft > 0) {
         for (auto &tile : player.p_ownership) {
@@ -143,18 +168,20 @@ bool addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long &point
     return false;
 }
 
-std::vector<Player> setupPlayers(std::vector<Tile> &map, int playersInGame, int AIplayersInGame)
+std::vector<Player> Game::setupPlayers(std::vector<Tile> &map,
+                                       int playersInGame,
+                                       int AIplayersInGame)
 {
     QRandomGenerator randomizer(QRandomGenerator::securelySeeded());
     std::vector<Player> players;
-    std::string playerName;
+    QString playerName;
     players.emplace_back(Player(map));
 
     int human = playersInGame - AIplayersInGame;
 
     for (int i = 1; i <= playersInGame; i++) {
         playerName = "Player ";
-        playerName.append(std::to_string(i));
+        playerName + i;
 
         players.emplace_back(Player(playerName, i, (i > human)));
     }
@@ -171,12 +198,12 @@ std::vector<Player> setupPlayers(std::vector<Tile> &map, int playersInGame, int 
     return players;
 }
 
-void plus1ForEveryone(std::vector<Tile> &tiles)
+void Game::plus1ForEveryone(std::vector<Tile> &tiles)
 {
-    unsigned int pointsLeft = tiles.size(), Full = 0;
+    unsigned long long pointsLeft = tiles.size(), Full = 0;
     while (pointsLeft > 0) {
         for (auto &tile : tiles) {
-            if (tile.m_value < 12) {
+            if (tile.m_value < 12 && pointsLeft > 0) {
                 tile.m_value += 1;
                 pointsLeft -= 1;
             } else {
@@ -190,9 +217,9 @@ void plus1ForEveryone(std::vector<Tile> &tiles)
     }
 }
 
-std::vector<Tile> generateTemplate(sf::Texture &m_textures,
-                                   sf::Vector2i tileSize,
-                                   unsigned int mapSize)
+std::vector<Tile> Game::generateTemplate(sf::Texture &m_textures,
+                                         sf::Vector2i tileSize,
+                                         unsigned int mapSize)
 {
     std::vector<Tile> m_objects;
 
@@ -223,7 +250,7 @@ std::vector<Tile> generateTemplate(sf::Texture &m_textures,
     return m_objects;
 }
 
-std::vector<sf::VertexArray> createLines(std::vector<Player> &players)
+std::vector<sf::VertexArray> Game::createLines(std::vector<Player> &players)
 {
     sf::VertexArray temp(sf::Lines, 2);
     std::vector<sf::VertexArray> vec;
@@ -254,7 +281,7 @@ std::vector<sf::VertexArray> createLines(std::vector<Player> &players)
     return vec;
 }
 
-void manualConfig(std::vector<Tile> &map, std::vector<Player> &players)
+void Game::manualConfig(std::vector<Tile> &map, std::vector<Player> &players)
 {
     int playersInGame, botsInGame;
     while (1) {
@@ -305,7 +332,7 @@ void manualConfig(std::vector<Tile> &map, std::vector<Player> &players)
     }
 }
 
-void nextTurn(unsigned long long &turn, std::vector<Player> &players)
+void Game::nextTurn(unsigned long long &turn, std::vector<Player> &players)
 {
     turn++;
     if (turn >= players.size()) {
@@ -320,7 +347,7 @@ void nextTurn(unsigned long long &turn, std::vector<Player> &players)
     }
 }
 
-void hilightOrigin(Player &player)
+void Game::hilightOrigin(Player &player)
 {
     sf::Color actual;
 

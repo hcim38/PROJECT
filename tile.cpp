@@ -9,10 +9,9 @@ Tile::Tile(sf::Texture &texture, sf::Vector2i size, sf::Vector2f pos)
     setColor(sf::Color(255, 255, 255, 150));
 }
 
-Tile::Tile(bool Null)
+Tile::Tile()
 {
-    if (!Null)
-        m_Null = 1;
+    m_Null = 1;
     setColor(sf::Color(255, 255, 255, 0));
     m_position = sf::Vector2i(-10, -10);
 }
