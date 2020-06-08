@@ -2,8 +2,8 @@
 
 Game::Game()
 {
-    qrTexturePtr = new QResource(":/Textures/hex-tex.png");
-    qrFontPtr = new QResource(":/Fonts/Lato-Regular.ttf");
+    qrTexturePtr = new QResource(":/Textures/Resources/hex-tex.png");
+    qrFontPtr = new QResource(":/Fonts/Resources/Lato-Regular.ttf");
 
     texture.loadFromMemory(qrTexturePtr->data(), qrTexturePtr->size()); //lading resources
     font.loadFromMemory(qrFontPtr->data(), qrFontPtr->size());

@@ -1,7 +1,7 @@
-#include "game.h"
-#include "gameMain.h"
-#include "gamestartwindow.h"
-#include "mapEditorMode.h"
+#include "GUI\gamestartwindow.h"
+#include "GameItself\game.h"
+#include "GameItself\gameMain.h"
+#include "GameItself\mapEditorMode.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])

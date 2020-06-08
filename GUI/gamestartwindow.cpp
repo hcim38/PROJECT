@@ -1,7 +1,7 @@
-#include "gamestartwindow.h"
+#include "GUI\gamestartwindow.h"
 #include "ui_gamestartwindow.h"
 
-#include "gameMain.h"
+#include "GameItself\gameMain.h"
 
 gameStartWindow::gameStartWindow(QWidget *parent) :
       QWidget(parent),

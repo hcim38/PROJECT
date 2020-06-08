@@ -1,8 +1,8 @@
 #ifndef GAMESTARTWINDOW_H
 #define GAMESTARTWINDOW_H
 
-#include "game.h"
-#include "mapEditorMode.h"
+#include "GameItself\game.h"
+#include "GameItself\mapEditorMode.h"
 
 #include <QWidget>
 

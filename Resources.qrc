@@ -1,9 +1,9 @@
 <RCC>
     <qresource prefix="/Textures">
-        <file>tiles.png</file>
-        <file>hex-tex.png</file>
+        <file>Resources/hex-tex.png</file>
+        <file>Resources/tiles.png</file>
     </qresource>
     <qresource prefix="/Fonts">
-        <file>Lato-Regular.ttf</file>
+        <file>Resources/Lato-Regular.ttf</file>
     </qresource>
 </RCC>

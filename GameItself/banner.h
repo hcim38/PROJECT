@@ -1,6 +1,6 @@
 #ifndef BANNER_H
 #define BANNER_H
-#include "player.h"
+#include "GameItself\player.h"
 
 class Banner : public sf::RectangleShape
 {

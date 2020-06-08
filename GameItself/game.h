@@ -1,6 +1,6 @@
 #ifndef GAME_H
 #define GAME_H
-#include "banner.h"
+#include "GameItself\banner.h"
 
 class Game
 {
