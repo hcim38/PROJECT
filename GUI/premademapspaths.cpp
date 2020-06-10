@@ -62,3 +62,33 @@ void PremadeMapsPaths::on_buttMap8_clicked()
     chosenFile = ":/Maps/Resources/TCHC.map";
     done(1);
 }
+
+void PremadeMapsPaths::on_buttMapMiki1_clicked()
+{
+    chosenFile = ":/Maps/Resources/Mikado's_Map.map";
+    done(1);
+}
+
+void PremadeMapsPaths::on_buttMapMiki2_clicked()
+{
+    chosenFile = ":/Maps/Resources/Mikado's_Map2.map";
+    done(1);
+}
+
+void PremadeMapsPaths::on_buttMapMiki3_clicked()
+{
+    chosenFile = ":/Maps/Resources/Mikado's_Map3.map";
+    done(1);
+}
+
+void PremadeMapsPaths::on_buttMapMiki4_clicked()
+{
+    chosenFile = ":/Maps/Resources/Mikado's_Map4.map";
+    done(1);
+}
+
+void PremadeMapsPaths::on_buttMapMiki5_clicked()
+{
+    chosenFile = ":/Maps/Resources/Mikado's_Map5.map";
+    done(1);
+}

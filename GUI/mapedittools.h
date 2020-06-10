@@ -3,7 +3,6 @@
 
 #include "GameItself/game.h"
 #include "premademapspaths.h"
-#include <QWidget>
 
 namespace Ui {
 class mapEditTools;

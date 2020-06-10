@@ -14,7 +14,8 @@ SOURCES += \
         GameItself\player.cpp \
         GameItself\tile.cpp \
         GUI\mapedittools.cpp \
-        GUI\premademapspaths.cpp
+        GUI\premademapspaths.cpp \
+        GUI\startbuttonmapselection.cpp
 
 HEADERS += \
     GameItself\banner.h \
@@ -24,7 +25,8 @@ HEADERS += \
     GameItself\player.h \
     GameItself\tile.h \
     GUI\mapedittools.h \
-    GUI\premademapspaths.h
+    GUI\premademapspaths.h \
+    GUI\startbuttonmapselection.h
 
 INCLUDEPATH += "C:/SFML-2.5.1/include"
 LIBS += -L"C:/SFML-2.5.1/lib"
@@ -40,5 +42,6 @@ RESOURCES += \
 FORMS += \
     GUI\gamestartwindow.ui \
     GUI\mapedittools.ui \
-    GUI\premademapspaths.ui
+    GUI\premademapspaths.ui \
+    GUI\startbuttonmapselection.ui
 

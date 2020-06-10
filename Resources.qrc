@@ -16,5 +16,10 @@
         <file>Resources/spirala.map</file>
         <file>Resources/TCHC.map</file>
         <file>Resources/emptyTemplate.map</file>
+        <file>Resources/Mikado's_Map.map</file>
+        <file>Resources/Mikado's_Map2.map</file>
+        <file>Resources/Mikado's_Map3.map</file>
+        <file>Resources/Mikado's_Map4.map</file>
+        <file>Resources/Mikado's_Map5.map</file>
     </qresource>
 </RCC>

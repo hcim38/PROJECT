@@ -1,7 +1,5 @@
 #include "mapedittools.h"
-
 #include "ui_mapedittools.h"
-#include <QDebug>
 
 mapEditTools::mapEditTools(QWidget *parent) : QWidget(parent), ui(new Ui::mapEditTools)
 {

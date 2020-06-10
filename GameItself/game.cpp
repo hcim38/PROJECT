@@ -156,7 +156,6 @@ bool Game::addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long 
         for (auto &tile : player.p_ownership) {
             if (tile == clickedAt && tile.getColor() == player.playersColor()) {
                 tile.valPlus1(pointsLeft);
-                std::cout << "Points Left: " << pointsLeft << std::endl;
             }
         }
         if (pointsLeft == 0) {

@@ -3,11 +3,14 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
-#include <iostream>
-
+#include <QCoreApplication>
+#include <QDebug>
+#include <QFileDialog>
 #include <QRandomGenerator>
 #include <QResource>
+#include <QStandardPaths>
 #include <QString>
+#include <QWidget>
 
 #include "windows.h"
 

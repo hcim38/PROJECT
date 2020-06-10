@@ -4,9 +4,6 @@
 #include "GameItself\game.h"
 #include "GameItself\mapEditorMode.h"
 
-#include <QCoreApplication>
-#include <QWidget>
-
 namespace Ui {
 class gameStartWindow;
 }

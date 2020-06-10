@@ -29,6 +29,16 @@ private slots:
     void on_buttMap7_clicked();
     void on_buttMap8_clicked();
 
+    void on_buttMapMiki1_clicked();
+
+    void on_buttMapMiki2_clicked();
+
+    void on_buttMapMiki3_clicked();
+
+    void on_buttMapMiki4_clicked();
+
+    void on_buttMapMiki5_clicked();
+
 private:
     Ui::PremadeMapsPaths *ui;
 };

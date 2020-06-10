@@ -1,8 +1,6 @@
 #ifndef GAME_H
 #define GAME_H
 #include "GameItself\banner.h"
-#include <QFileDialog>
-#include <QStandardPaths>
 
 class Game
 {

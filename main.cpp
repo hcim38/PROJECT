@@ -1,6 +1,4 @@
 #include "GUI\gamestartwindow.h"
-#include "GameItself\game.h"
-#include "GameItself\mapEditorMode.h"
 #include <QApplication>
 
 //TODO add win condition

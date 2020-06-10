@@ -1,5 +1,4 @@
 #include "banner.h"
-#include <QDebug>
 
 Banner::Banner(sf::Vector2f pos, sf::Vector2f size, sf::Font &font)
 {

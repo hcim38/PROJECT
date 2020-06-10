@@ -1,8 +1,7 @@
 #include "GUI\gamestartwindow.h"
-
 #include "ui_gamestartwindow.h"
 
-#include <QThread>
+#include "startbuttonmapselection.h"
 
 gameStartWindow::gameStartWindow(QWidget *parent) :
       QWidget(parent),
@@ -112,13 +111,17 @@ void gameStartWindow::on_startButton_clicked()
     }
 
     //load map
-    QString mapfileName;
+    startButtonMapSelection dial(this);
+    dial.setWindowFlag(Qt::WindowTitleHint);
+    dial.show();
 
-    if (mapfileName == "") {
-        mapfileName = ":/Maps/Resources/randMap1.map";
+    dial.exec();
+
+    if (dial.filename == "") {
+        return;
     }
 
-    QFile file(mapfileName);
+    QFile file(dial.filename);
     file.open(QFile::ReadOnly);
     if (file.isOpen()) {
         std::vector<Tile> newMap = game.generateTemplate(game.texture);
@@ -139,6 +142,7 @@ void gameStartWindow::on_startButton_clicked()
                     tile->setColor(sf::Color(255, 0, 0, 100));
                     game.deletedTilesMapEdit.emplace_back(*tile);
                     newMap.erase(tile);
+                    tile--;
                     continue;
                 }
             }
