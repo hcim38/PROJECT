@@ -1,7 +1,8 @@
 #include "GUI\gamestartwindow.h"
+
 #include "ui_gamestartwindow.h"
 
-#include "GameItself\gameMain.h"
+#include <QThread>
 
 gameStartWindow::gameStartWindow(QWidget *parent) :
       QWidget(parent),
@@ -17,7 +18,7 @@ gameStartWindow::~gameStartWindow()
 
 void gameStartWindow::captureRandomTiles(std::vector<Player> &players, Game &game)
 {
-    game.MAP = game.generateTemplate(game.texture, sf::Vector2(30, 30), 10);
+    game.MAP = game.generateTemplate(game.texture);
     players[0].p_ownership = game.MAP;
 
     QRandomGenerator randomizer(QRandomGenerator::securelySeeded());
@@ -112,8 +113,47 @@ void gameStartWindow::on_startButton_clicked()
     }
 
     captureRandomTiles(TEMP, game);
-    game.players = TEMP;
     hide();
-    game1(game);
+    game.players = TEMP;
+    game.run();
+    show();
+}
+
+void gameStartWindow::on_defaultButton_clicked()
+{
+    ui->groupBox_1->setEnabled(1);
+    ui->playerHuman1->setChecked(1);
+    ui->playerComputer1->setChecked(0);
+    ui->playerNickname1->setText("Player 01");
+    ui->groupBox_2->setEnabled(1);
+    ui->playerHuman2->setChecked(0);
+    ui->playerComputer2->setChecked(1);
+    ui->playerNickname2->setText("Player 02");
+    ui->groupBox_3->setEnabled(1);
+    ui->playerHuman3->setChecked(0);
+    ui->playerComputer3->setChecked(1);
+    ui->playerNickname3->setText("Player 03");
+    ui->groupBox_4->setEnabled(0);
+    ui->playerHuman4->setChecked(0);
+    ui->playerComputer4->setChecked(1);
+    ui->playerNickname4->setText("Player 04");
+    ui->groupBox_5->setEnabled(0);
+    ui->playerHuman5->setChecked(0);
+    ui->playerComputer5->setChecked(1);
+    ui->playerNickname5->setText("Player 05");
+}
+
+void gameStartWindow::on_mapEditorButton_clicked()
+{
+    Game game;
+    sf::Color temp;
+    game.MAP = game.generateTemplate(game.texture);
+    for (auto &val : game.MAP) {
+        temp = val.getColor();
+        temp.a = 255;
+        val.setColor(temp);
+    }
+    hide();
+    mapeditor(game);
     show();
 }

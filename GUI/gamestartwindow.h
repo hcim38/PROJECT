@@ -4,6 +4,7 @@
 #include "GameItself\game.h"
 #include "GameItself\mapEditorMode.h"
 
+#include <QCoreApplication>
 #include <QWidget>
 
 namespace Ui {
@@ -27,6 +28,10 @@ private slots:
     void on_Player4Active_clicked();
     void on_Player5Active_clicked();
     void on_startButton_clicked();
+
+    void on_defaultButton_clicked();
+
+    void on_mapEditorButton_clicked();
 
 private:
     Ui::gameStartWindow *ui;

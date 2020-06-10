@@ -334,7 +334,7 @@
          <item>
           <widget class="QPushButton" name="defaultButton">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="text">
             <string>Default</string>
@@ -344,7 +344,7 @@
          <item>
           <widget class="QPushButton" name="mapEditorButton">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="text">
             <string>Map editor</string>

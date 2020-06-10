@@ -1,6 +1,8 @@
 #ifndef GAME_H
 #define GAME_H
 #include "GameItself\banner.h"
+#include <QFileDialog>
+#include <QStandardPaths>
 
 class Game
 {
@@ -13,15 +15,16 @@ public:
     bool addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long &pointsLeft);
     void plus1ForEveryone(std::vector<Tile> &tiles);
     std::vector<Tile> generateTemplate(sf::Texture &m_textures,
-                                       sf::Vector2i tileSize,
-                                       unsigned int mapSize);
+                                       sf::Vector2i tileSize = sf::Vector2(30, 30),
+                                       unsigned int mapSize = 10);
     std::vector<Player> setupPlayers(std::vector<Tile> &map,
                                      int playersInGame = 4,
                                      int AIplayersInGame = 3);
     std::vector<sf::VertexArray> createLines(std::vector<Player> &players);
-    void manualConfig(std::vector<Tile> &map, std::vector<Player> &players);
     void nextTurn(unsigned long long &turn, std::vector<Player> &players);
     void hilightOrigin(Player &player);
+
+    void run();
 
     //vars
 
@@ -44,6 +47,10 @@ public:
 
     sf::Texture texture;
     sf::Font font;
+
+    std::vector<Tile> deletedTilesMapEdit;
+    bool killTheMapEdit = 0;
+    bool newTemplateMapEdit = 0;
 };
 
 #endif // GAME_H

@@ -8,21 +8,21 @@ CONFIG += c++17
 SOURCES += \
         GameItself\Banner.cpp \
         GameItself\game.cpp \
-        GameItself\gameMain.cpp \
         GUI\gamestartwindow.cpp \
         main.cpp \
         GameItself\mapEditorMode.cpp \
         GameItself\player.cpp \
-        GameItself\tile.cpp
+        GameItself\tile.cpp \
+        GUI\mapedittools.cpp
 
 HEADERS += \
     GameItself\banner.h \
     GameItself\game.h \
-    GameItself\gameMain.h \
     GUI\gamestartwindow.h \
     GameItself\mapEditorMode.h \
     GameItself\player.h \
-    GameItself\tile.h
+    GameItself\tile.h \
+    GUI\mapedittools.h
 
 INCLUDEPATH += "C:/SFML-2.5.1/include"
 LIBS += -L"C:/SFML-2.5.1/lib"
@@ -36,5 +36,6 @@ RESOURCES += \
     Resources.qrc
 
 FORMS += \
-    GUI\gamestartwindow.ui
+    GUI\gamestartwindow.ui \
+    GUI\mapedittools.ui
 

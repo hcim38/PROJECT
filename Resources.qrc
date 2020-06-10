@@ -6,4 +6,5 @@
     <qresource prefix="/Fonts">
         <file>Resources/Lato-Regular.ttf</file>
     </qresource>
+    <qresource prefix="/Maps"/>
 </RCC>
