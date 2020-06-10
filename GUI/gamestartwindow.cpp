@@ -18,7 +18,6 @@ gameStartWindow::~gameStartWindow()
 
 void gameStartWindow::captureRandomTiles(std::vector<Player> &players, Game &game)
 {
-    game.MAP = game.generateTemplate(game.texture);
     players[0].p_ownership = game.MAP;
 
     QRandomGenerator randomizer(QRandomGenerator::securelySeeded());
@@ -112,9 +111,45 @@ void gameStartWindow::on_startButton_clicked()
         i++;
     }
 
+    //load map
+    QString mapfileName;
+
+    if (mapfileName == "") {
+        mapfileName = ":/Maps/Resources/randMap1.map";
+    }
+
+    QFile file(mapfileName);
+    file.open(QFile::ReadOnly);
+    if (file.isOpen()) {
+        std::vector<Tile> newMap = game.generateTemplate(game.texture);
+        std::vector<sf::Vector2i> deleted;
+        QDataStream in(&file);
+        QString str;
+        int x, y;
+
+        while (!in.atEnd()) {
+            in >> x >> str >> y >> str;
+            deleted.emplace_back(sf::Vector2i(x, y));
+        }
+        file.close();
+        game.deletedTilesMapEdit.clear();
+        for (auto const &pos : deleted) {
+            for (auto tile = newMap.begin(); tile != newMap.end(); tile++) {
+                if (pos.x == tile->m_position.x && pos.y == tile->m_position.y) {
+                    tile->setColor(sf::Color(255, 0, 0, 100));
+                    game.deletedTilesMapEdit.emplace_back(*tile);
+                    newMap.erase(tile);
+                    continue;
+                }
+            }
+        }
+        game.MAP = newMap;
+    }
+
     captureRandomTiles(TEMP, game);
     hide();
     game.players = TEMP;
+
     game.run();
     show();
 }

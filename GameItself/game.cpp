@@ -20,7 +20,6 @@ Game::Game()
     TilesOnScreen = MAP.size(); //win condition
 
     banner = Banner(sf::Vector2f(0, 640 - 32), sf::Vector2f(640, 32), font);
-    Lines = createLines(players); //Lines indicating possible moves
 }
 
 void Game::clicked(sf::Vector2i pos, std::vector<Player> &players, Tile &clickedAt)
@@ -313,12 +312,12 @@ void Game::hilightOrigin(Player &player)
 //TODO add save game progress
 
 //TODO add pause menu GUI
-//TODO make use of player.nickname
 //TODO highscores?
 //TODO add randomization factor to fights?
 
 int gameLoop(Game &game)
 {
+    game.Lines = game.createLines(game.players);
     game.winCondition = 0;
     sf::RenderWindow window(sf::VideoMode(640, 640), "Tile Conqueror");
     window.setFramerateLimit(60);
@@ -345,7 +344,7 @@ int gameLoop(Game &game)
                 game.players[game.turn].clearOrigin();
                 game.pointsGiveAway = 1;
                 game.pointsLeft = game.players[game.turn].ownership().size();
-            }
+            } //TODO add full value on PPM
         }
 
         window.clear(sf::Color::Black);

@@ -1,0 +1,36 @@
+#ifndef PREMADEMAPSPATHS_H
+#define PREMADEMAPSPATHS_H
+
+#include <QDialog>
+
+namespace Ui {
+class PremadeMapsPaths;
+}
+
+class PremadeMapsPaths : public QDialog
+{
+    Q_OBJECT
+
+public:
+    explicit PremadeMapsPaths(QWidget *parent = nullptr);
+    ~PremadeMapsPaths();
+    QString chosenFile;
+    void disableEmptybutt();
+
+private slots:
+    void on_buttEmptyMap_clicked();
+
+    void on_buttMap1_clicked();
+    void on_buttMap2_clicked();
+    void on_buttMap3_clicked();
+    void on_buttMap4_clicked();
+    void on_buttMap5_clicked();
+    void on_buttMap6_clicked();
+    void on_buttMap7_clicked();
+    void on_buttMap8_clicked();
+
+private:
+    Ui::PremadeMapsPaths *ui;
+};
+
+#endif // PREMADEMAPSPATHS_H

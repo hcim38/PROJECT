@@ -2,6 +2,7 @@
 #define MAPEDITTOOLS_H
 
 #include "GameItself/game.h"
+#include "premademapspaths.h"
 #include <QWidget>
 
 namespace Ui {

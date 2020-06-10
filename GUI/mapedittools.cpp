@@ -1,5 +1,7 @@
 #include "mapedittools.h"
+
 #include "ui_mapedittools.h"
+#include <QDebug>
 
 mapEditTools::mapEditTools(QWidget *parent) : QWidget(parent), ui(new Ui::mapEditTools)
 {
@@ -81,6 +83,82 @@ void mapEditTools::on_buttSave_clicked()
     }
 }
 
-void mapEditTools::on_buttLoad_clicked() {}
+void mapEditTools::on_buttLoad_clicked()
+{
+    PremadeMapsPaths dialog(this);
+    dialog.setWindowFlag(Qt::Tool);
 
-void mapEditTools::on_buttLoadFile_clicked() {}
+    dialog.show();
+    dialog.exec();
+
+    QFile file(dialog.chosenFile);
+    file.open(QFile::ReadOnly);
+    if (file.isOpen()) {
+        game->MAP = game->generateTemplate(game->texture);
+        std::vector<sf::Vector2i> deleted;
+        QDataStream in(&file);
+        QString str;
+        int x, y;
+
+        while (!in.atEnd()) {
+            in >> x >> str >> y >> str;
+            deleted.emplace_back(sf::Vector2i(x, y));
+        }
+        file.close();
+        game->deletedTilesMapEdit.clear();
+        for (auto const &pos : deleted) {
+            for (auto tile = game->MAP.begin(); tile != game->MAP.end(); tile++) {
+                if (pos.x == tile->m_position.x && pos.y == tile->m_position.y) {
+                    tile->setColor(sf::Color(255, 0, 0, 100));
+                    game->deletedTilesMapEdit.emplace_back(*tile);
+                    game->MAP.erase(tile);
+                    tile--;
+                    continue;
+                }
+            }
+        }
+    }
+}
+
+void mapEditTools::on_buttLoadFile_clicked()
+{
+    QString appdata = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    QString filename = QFileDialog::getOpenFileName(this,
+                                                    tr("Open Map"),
+                                                    appdata + "/maps",
+                                                    tr("Map (*.map);;All files(*)"));
+    if (filename == "")
+        return;
+    QFile file(filename);
+    QString mapName = QFileInfo(file.fileName()).fileName();
+    if (mapName.contains(".map")) {
+        mapName.replace(".map", "");
+    }
+    ui->mapName->setText(mapName);
+    file.open(QFile::ReadOnly);
+    if (file.isOpen()) {
+        std::vector<Tile> newMap = game->generateTemplate(game->texture);
+        std::vector<sf::Vector2i> deleted;
+        QDataStream in(&file);
+        QString str;
+        int x, y;
+
+        while (!in.atEnd()) {
+            in >> x >> str >> y >> str;
+            deleted.emplace_back(sf::Vector2i(x, y));
+        }
+        file.close();
+        game->deletedTilesMapEdit.clear();
+        for (auto const &pos : deleted) {
+            for (auto tile = newMap.begin(); tile != newMap.end(); tile++) {
+                if (pos.x == tile->m_position.x && pos.y == tile->m_position.y) {
+                    tile->setColor(sf::Color(255, 0, 0, 100));
+                    game->deletedTilesMapEdit.emplace_back(*tile);
+                    newMap.erase(tile);
+                    continue;
+                }
+            }
+        }
+        game->MAP = newMap;
+    }
+}

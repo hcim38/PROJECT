@@ -15,5 +15,6 @@
         <file>Resources/Snek.map</file>
         <file>Resources/spirala.map</file>
         <file>Resources/TCHC.map</file>
+        <file>Resources/emptyTemplate.map</file>
     </qresource>
 </RCC>
