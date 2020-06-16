@@ -1,11 +1,9 @@
 #include "GUI\gamestartwindow.h"
+#include "mapedittools.h"
+#include "startbuttonmapselection.h"
 #include "ui_gamestartwindow.h"
 
-#include "startbuttonmapselection.h"
-
-gameStartWindow::gameStartWindow(QWidget *parent) :
-      QWidget(parent),
-      ui(new Ui::gameStartWindow)
+gameStartWindow::gameStartWindow(QWidget *parent) : QWidget(parent), ui(new Ui::gameStartWindow)
 {
     ui->setupUi(this);
 }
@@ -13,24 +11,6 @@ gameStartWindow::gameStartWindow(QWidget *parent) :
 gameStartWindow::~gameStartWindow()
 {
     delete ui;
-}
-
-void gameStartWindow::captureRandomTiles(std::vector<Player> &players, Game &game)
-{
-    players[0].p_ownership = game.MAP;
-
-    QRandomGenerator randomizer(QRandomGenerator::securelySeeded());
-    QString playerName;
-
-    for (auto it = players.begin() + 1; it != players.end(); it++) {
-        game.capture(players[0]
-                         .ownership()[randomizer.bounded(0, (players[0].p_ownership.size() - 1))],
-                     players[0],
-                     *it);
-    }
-    for (auto it = players.begin() + 1; it != players.end(); it++) {
-        it->p_ownership[0].setBegginerValue();
-    }
 }
 
 void gameStartWindow::on_Player1Active_clicked()
@@ -121,40 +101,10 @@ void gameStartWindow::on_startButton_clicked()
         return;
     }
 
-    QFile file(dial.filename);
-    file.open(QFile::ReadOnly);
-    if (file.isOpen()) {
-        std::vector<Tile> newMap = game.generateTemplate(game.texture);
-        std::vector<sf::Vector2i> deleted;
-        QDataStream in(&file);
-        QString str;
-        int x, y;
+    game.loadMap(dial.filename, TEMP);
 
-        while (!in.atEnd()) {
-            in >> x >> str >> y >> str;
-            deleted.emplace_back(sf::Vector2i(x, y));
-        }
-        file.close();
-        game.deletedTilesMapEdit.clear();
-        for (auto const &pos : deleted) {
-            for (auto tile = newMap.begin(); tile != newMap.end(); tile++) {
-                if (pos.x == tile->m_position.x && pos.y == tile->m_position.y) {
-                    tile->setColor(sf::Color(255, 0, 0, 100));
-                    game.deletedTilesMapEdit.emplace_back(*tile);
-                    newMap.erase(tile);
-                    tile--;
-                    continue;
-                }
-            }
-        }
-        game.MAP = newMap;
-    }
-
-    captureRandomTiles(TEMP, game);
     hide();
-    game.players = TEMP;
-
-    game.run();
+    game.gameLoop();
     show();
 }
 
@@ -184,15 +134,17 @@ void gameStartWindow::on_defaultButton_clicked()
 
 void gameStartWindow::on_mapEditorButton_clicked()
 {
-    Game game;
-    sf::Color temp;
-    game.MAP = game.generateTemplate(game.texture);
-    for (auto &val : game.MAP) {
-        temp = val.getColor();
-        temp.a = 255;
-        val.setColor(temp);
-    }
+    MapEditor editor;
+
+    mapEditTools tools(&editor);
+    QPoint pos = this->pos();
+    pos.setX(pos.x() + 650);
+    pos.setY(pos.y() + 250);
+    tools.move(pos);
+    tools.show();
+
     hide();
-    mapeditor(game);
+    editor.mapeditor();
+    tools.hide();
     show();
 }

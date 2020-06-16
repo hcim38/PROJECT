@@ -16,8 +16,6 @@ public:
     explicit gameStartWindow(QWidget *parent = nullptr);
     ~gameStartWindow();
 
-    void captureRandomTiles(std::vector<Player> &players, Game &game);
-
 private slots:
     void on_Player1Active_clicked();
     void on_Player2Active_clicked();

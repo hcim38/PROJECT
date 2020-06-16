@@ -1,6 +1,22 @@
 #include "mapEditorMode.h"
 
-std::vector<sf::VertexArray> createLines(std::vector<Tile> &tiles)
+MapEditor::MapEditor()
+{
+    qrTexturePtr = new QResource(":/Textures/Resources/hex-tex.png");
+    qrFontPtr = new QResource(":/Fonts/Resources/Lato-Regular.ttf");
+
+    texture.loadFromMemory(qrTexturePtr->data(), qrTexturePtr->size()); //lading resources
+    font.loadFromMemory(qrFontPtr->data(), qrFontPtr->size());
+
+    delete qrTexturePtr;
+    delete qrFontPtr;
+
+    clickedAt = Tile();
+
+    generateTemplate();
+}
+
+std::vector<sf::VertexArray> MapEditor::createLines(std::vector<Tile> &tiles)
 {
     sf::VertexArray temp(sf::Lines, 2);
     std::vector<sf::VertexArray> vec;
@@ -25,7 +41,7 @@ std::vector<sf::VertexArray> createLines(std::vector<Tile> &tiles)
     return vec;
 }
 
-bool clicked(sf::Vector2i pos, std::vector<Tile> &tiles, Tile &clickedAt)
+bool MapEditor::clicked(sf::Vector2i pos, std::vector<Tile> &tiles, Tile &clickedAt)
 {
     for (auto &val : tiles) {
         if (val.getGlobalBounds().contains(pos.x, pos.y)) {
@@ -37,28 +53,27 @@ bool clicked(sf::Vector2i pos, std::vector<Tile> &tiles, Tile &clickedAt)
     return 0;
 }
 
-void saveToFile(std::vector<Tile> &map) {}
+void MapEditor::mapeditor()
+{
+    generateTemplate();
+    sf::Color temp;
+    for (auto &val : MAP) {
+        temp = val.getColor();
+        temp.a = 255;
+        val.setColor(temp);
+    }
 
-void mapeditor(Game &game)
-{ //creating necessary variables
     std::vector<sf::VertexArray> Lines;
     sf::Color defaultColor, deletedColor(255, 0, 0, 100);
-    defaultColor = game.MAP[0].getColor();
+    defaultColor = MAP[0].getColor();
     defaultColor.a = 255;
 
-    Lines = createLines(game.MAP); //Lines indicating possible moves
+    Lines = createLines(MAP); //Lines indicating possible moves
     sf::RenderWindow window(sf::VideoMode(640, 640), "Tile Conqueror - Map edit mode");
     window.setFramerateLimit(60);
     window.setVerticalSyncEnabled(1);
 
-    mapEditTools tools;
-    tools.game = &game;
-    tools.show();
-    QPoint pos = tools.pos();
-    pos.setX(pos.x() + 400);
-    tools.move(pos);
-
-    while (window.isOpen() && !game.killTheMapEdit) { //config complete, window created, game starts
+    while (window.isOpen() && !killTheMapEdit) { //config complete, window created, game starts
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
@@ -66,8 +81,8 @@ void mapeditor(Game &game)
             }
             if (event.type == event.MouseButtonReleased
                 && event.mouseButton.button == sf::Mouse::Left) {
-                clicked(sf::Mouse::getPosition(window), game.MAP, game.clickedAt);
-                clicked(sf::Mouse::getPosition(window), game.deletedTilesMapEdit, game.clickedAt);
+                clicked(sf::Mouse::getPosition(window), MAP, clickedAt);
+                clicked(sf::Mouse::getPosition(window), deletedTilesMapEdit, clickedAt);
             }
             if (event.type == event.KeyReleased && event.key.code == sf::Keyboard::Space) {
                 return;
@@ -80,49 +95,48 @@ void mapeditor(Game &game)
             window.draw(line);
         }
 
-        for (auto it = game.MAP.begin(); it != game.MAP.end(); it++) {
-            if (*it == game.clickedAt) {
+        for (auto it = MAP.begin(); it != MAP.end(); it++) {
+            if (*it == clickedAt) {
                 it->setColor(deletedColor);
-                game.deletedTilesMapEdit.emplace_back(*it);
-                game.MAP.erase(it);
+                deletedTilesMapEdit.emplace_back(*it);
+                MAP.erase(it);
                 it--;
-                game.clickedAt = Tile();
+                clickedAt = Tile();
                 break;
             }
         }
 
-        for (auto it = game.deletedTilesMapEdit.begin(); it != game.deletedTilesMapEdit.end();
-             it++) {
-            if (*it == game.clickedAt) {
+        for (auto it = deletedTilesMapEdit.begin(); it != deletedTilesMapEdit.end(); it++) {
+            if (*it == clickedAt) {
                 it->setColor(defaultColor);
-                game.MAP.emplace_back(*it);
-                game.deletedTilesMapEdit.erase(it);
+                MAP.emplace_back(*it);
+                deletedTilesMapEdit.erase(it);
                 it--;
                 break;
             }
         }
 
-        game.clickedAt = Tile();
+        clickedAt = Tile();
 
-        if (!game.MAP.empty())
-            for (auto &val : game.MAP) {
+        if (!MAP.empty())
+            for (auto &val : MAP) {
                 window.draw(val);
             }
-        if (!game.deletedTilesMapEdit.empty())
-            for (auto &val : game.deletedTilesMapEdit) {
+        if (!deletedTilesMapEdit.empty())
+            for (auto &val : deletedTilesMapEdit) {
                 window.draw(val);
             }
 
-        if (game.newTemplateMapEdit) {
-            game.deletedTilesMapEdit.clear();
-            game.MAP = game.generateTemplate(game.texture);
+        if (newTemplateMapEdit) {
+            deletedTilesMapEdit.clear();
+            generateTemplate();
             sf::Color temp;
-            for (auto &val : game.MAP) {
+            for (auto &val : MAP) {
                 temp = val.getColor();
                 temp.a = 255;
                 val.setColor(temp);
             }
-            game.newTemplateMapEdit = 0;
+            newTemplateMapEdit = 0;
         }
 
         window.display(); //koniec

@@ -6,6 +6,7 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QFileDialog>
+#include <QMessageBox>
 #include <QRandomGenerator>
 #include <QResource>
 #include <QStandardPaths>

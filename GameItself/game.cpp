@@ -13,11 +13,11 @@ Game::Game()
 
     clickedAt = Tile();
 
-    MAP = generateTemplate(texture);
+    generateTemplate();
 
     players = setupPlayers(MAP);
 
-    TilesOnScreen = MAP.size(); //win condition
+    TilesOnScreen = MAP.size();
 
     banner = Banner(sf::Vector2f(0, 640 - 32), sf::Vector2f(640, 32), font);
 }
@@ -159,7 +159,6 @@ bool Game::addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long 
             }
         }
         if (pointsLeft == 0) {
-            system("cls");
             return true;
         }
     }
@@ -215,24 +214,20 @@ void Game::plus1ForEveryone(std::vector<Tile> &tiles)
     }
 }
 
-std::vector<Tile> Game::generateTemplate(sf::Texture &m_textures,
-                                         sf::Vector2i tileSize,
-                                         unsigned int mapSize)
+void Game::generateTemplate(sf::Vector2i tileSize, unsigned int mapSize)
 {
     std::vector<Tile> m_objects;
 
     for (unsigned int i = 0; i < mapSize; ++i)
         for (unsigned int j = 0; j < mapSize; ++j) {
             if (j % 2 == 0) {
-                Tile temp(m_textures,
-                          tileSize,
-                          sf::Vector2f(i * tileSize.x * 2, 2 * j * tileSize.y));
+                Tile temp(texture, tileSize, sf::Vector2f(i * tileSize.x * 2, 2 * j * tileSize.y));
                 temp.m_tilesize = tileSize;
                 temp.m_position = sf::Vector2i(i, j);
                 temp.offset = 0;
                 m_objects.emplace_back(temp);
             } else {
-                Tile temp(m_textures,
+                Tile temp(texture,
                           tileSize,
                           sf::Vector2f(i * tileSize.x * 2 + tileSize.x, 2 * j * tileSize.y));
                 temp.m_tilesize = tileSize;
@@ -245,7 +240,7 @@ std::vector<Tile> Game::generateTemplate(sf::Texture &m_textures,
         obj.move(tileSize.x / 2, tileSize.y / 2);
     }
 
-    return m_objects;
+    MAP = m_objects;
 }
 
 std::vector<sf::VertexArray> Game::createLines(std::vector<Player> &players)
@@ -314,10 +309,10 @@ void Game::hilightOrigin(Player &player)
 //TODO highscores?
 //TODO add randomization factor to fights?
 
-int gameLoop(Game &game)
+void Game::gameLoop()
 {
-    game.Lines = game.createLines(game.players);
-    game.winCondition = 0;
+    Lines = createLines(players);
+
     sf::RenderWindow window(sf::VideoMode(640, 640), "Tile Conqueror");
     window.setFramerateLimit(60);
     window.setVerticalSyncEnabled(1);
@@ -330,79 +325,129 @@ int gameLoop(Game &game)
             }
             if (event.type == event.MouseButtonReleased
                 && event.mouseButton.button == sf::Mouse::Left) {
-                game.clicked(sf::Mouse::getPosition(window), game.players, game.clickedAt);
+                clicked(sf::Mouse::getPosition(window), players, clickedAt);
             }
             if (event.type == event.KeyReleased && event.key.code == sf::Keyboard::Space
-                && !game.players[game.turn].AI()) {
-                if (game.pointsGiveAway) {
-                    game.nextTurn(game.turn, game.players);
-                    game.pointsGiveAway = 0;
+                && !players[turn].AI()) {
+                if (pointsGiveAway) {
+                    nextTurn(turn, players);
+                    pointsGiveAway = 0;
                     //if points left add 1 point from the remaining to every tile IF possible TODO long
                     continue;
                 }
-                game.players[game.turn].clearOrigin();
-                game.pointsGiveAway = 1;
-                game.pointsLeft = game.players[game.turn].ownership().size();
+                players[turn].clearOrigin();
+                pointsGiveAway = 1;
+                pointsLeft = players[turn].ownership().size();
             } //TODO add full value on PPM
         }
 
         window.clear(sf::Color::Black);
 
-        for (auto &line : game.Lines) {
+        for (auto &line : Lines) {
             window.draw(line);
         }
 
-        for (auto &player : game.players) {
+        for (auto &player : players) {
             player.textCorrection();
             player.colorCorrection();
         }
 
-        //if (!game.players[game.turn].AI()
-        //  || (game.clock.getElapsedTime().asSeconds() - game.time.asSeconds() >= 0.5f)) {
-        game.time = game.clock.getElapsedTime();
-        if (!game.pointsGiveAway) {
-            game.Turnmanager(game.players, game.clickedAt, game.turn);
+        if (!pointsGiveAway) {
+            Turnmanager(players, clickedAt, turn);
         } else {
-            game.addPointsToTiles(game.clickedAt, game.players[game.turn], game.pointsLeft);
+            addPointsToTiles(clickedAt, players[turn], pointsLeft);
         }
-        // }
 
-        game.hilightOrigin(game.players[game.turn]);
+        hilightOrigin(players[turn]);
 
-        game.clickedAt = Tile();
+        clickedAt = Tile();
 
         ////
 
-        for (auto player : game.players) {
+        for (auto player : players) {
             for (auto val : player.ownership()) {
-                val.drawMe(window, game.font);
+                val.drawMe(window, font);
             }
         }
 
-        game.banner.refreshBanner(game.pointsLeft, game.players[game.turn], game.pointsGiveAway);
-        game.banner.drawMe(window);
+        banner.refreshBanner(pointsLeft, players[turn], pointsGiveAway);
+        banner.drawMe(window);
 
         window.display(); //koniec
 
-        for (auto const &player : game.players) {
+        for (auto const &player : players) {
             if (player.p_ownership.empty() && player.p_nickname != "MAP") {
-                game.playersEmpty++;
+                playersEmpty++;
             }
         }
 
-        if (game.TilesOnScreen == game.players[game.turn].ownership().size()
-            || game.playersEmpty == game.players.size() - 2) //win condition
-            game.winCondition++;
-        if (game.winCondition >= 2)
+        if (TilesOnScreen == players[turn].ownership().size()
+            || playersEmpty == players.size() - 2) //win condition
+            winCondition++;
+        if (winCondition >= 2)
             break;
-        game.playersEmpty = 0;
+        playersEmpty = 0;
     } ///Game ended
 
     window.close();
-    return 1;
+
+    for (auto const &player : players) {
+        if (!player.p_ownership.empty() && player.p_nickname != "MAP") {
+            QMessageBox msg;
+            msg.setText(player.p_nickname + " has won the game");
+            msg.exec();
+        }
+    }
+    return;
 }
 
-void Game::run()
+void Game::captureRandomTiles()
 {
-    gameLoop(*this);
+    players[0].p_ownership = MAP;
+
+    QRandomGenerator randomizer(QRandomGenerator::securelySeeded());
+    QString playerName;
+
+    for (auto it = players.begin() + 1; it != players.end(); it++) {
+        capture(players[0].ownership()[randomizer.bounded(0, (players[0].p_ownership.size()))],
+                players[0],
+                *it);
+    }
+    for (auto it = players.begin() + 1; it != players.end(); it++) {
+        it->p_ownership[0].setBegginerValue();
+    }
 }
+
+void Game::loadMap(QString &path, std::vector<Player> &NewPlayers)
+{
+    players = NewPlayers;
+    QFile file(path);
+    file.open(QFile::ReadOnly);
+    if (file.isOpen()) {
+        generateTemplate();
+        std::vector<sf::Vector2i> deleted;
+        QDataStream in(&file);
+        QString str;
+        int x, y;
+
+        while (!in.atEnd()) {
+            in >> x >> str >> y >> str;
+            deleted.emplace_back(sf::Vector2i(x, y));
+        }
+        file.close();
+        for (auto const &pos : deleted) {
+            for (auto tile = MAP.begin(); tile != MAP.end(); tile++) {
+                if (pos.x == tile->m_position.x && pos.y == tile->m_position.y) {
+                    tile->setColor(sf::Color(255, 0, 0, 100));
+                    MAP.erase(tile);
+                    tile--;
+                    continue;
+                }
+            }
+        }
+    }
+
+    captureRandomTiles();
+}
+
+Game::~Game() {}

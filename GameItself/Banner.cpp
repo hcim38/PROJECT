@@ -9,6 +9,4 @@ Banner::Banner(sf::Vector2f pos, sf::Vector2f size, sf::Font &font)
     p_text.setStyle(sf::Text::Bold);
 }
 
-Banner::Banner(bool B) {}
-
 Banner::Banner() {}

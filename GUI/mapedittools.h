@@ -1,7 +1,7 @@
 #ifndef MAPEDITTOOLS_H
 #define MAPEDITTOOLS_H
 
-#include "GameItself/game.h"
+#include "GameItself/mapEditorMode.h"
 #include "premademapspaths.h"
 
 namespace Ui {
@@ -13,10 +13,10 @@ class mapEditTools : public QWidget
     Q_OBJECT
 
 public:
-    explicit mapEditTools(QWidget *parent = nullptr);
+    explicit mapEditTools(MapEditor *Editor, QWidget *parent = nullptr);
     ~mapEditTools();
 
-    Game *game;
+    MapEditor *editor;
 
 private slots:
     void on_buttExit_clicked();

@@ -1,10 +1,12 @@
 #include "mapedittools.h"
 #include "ui_mapedittools.h"
 
-mapEditTools::mapEditTools(QWidget *parent) : QWidget(parent), ui(new Ui::mapEditTools)
+mapEditTools::mapEditTools(MapEditor *Editor, QWidget *parent)
+    : QWidget(parent), ui(new Ui::mapEditTools)
 {
     setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint);
     ui->setupUi(this);
+    editor = Editor;
 }
 
 mapEditTools::~mapEditTools()
@@ -15,14 +17,14 @@ mapEditTools::~mapEditTools()
 void mapEditTools::on_buttExit_clicked()
 {
     //TODO dialog 'u sure?'
-    game->killTheMapEdit = 1;
+    editor->killTheMapEdit = 1;
     destroy();
 }
 
 void mapEditTools::on_buttNewTemplate_clicked()
 {
     //TODO dialog 'u usure?'
-    game->newTemplateMapEdit = 1;
+    editor->newTemplateMapEdit = 1;
     ui->mapName->setText("MapName");
 }
 
@@ -37,8 +39,10 @@ bool sortToFile(Tile const &one, Tile const &two)
 
 void mapEditTools::on_buttSave_clicked()
 {
-    if (!game->deletedTilesMapEdit.empty()) {
-        std::sort(game->deletedTilesMapEdit.begin(), game->deletedTilesMapEdit.end(), sortToFile);
+    if (!editor->deletedTilesMapEdit.empty()) {
+        std::sort(editor->deletedTilesMapEdit.begin(),
+                  editor->deletedTilesMapEdit.end(),
+                  sortToFile);
 
         QString filename = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
         QDir dir = filename;
@@ -71,7 +75,7 @@ void mapEditTools::on_buttSave_clicked()
             //TODO dialog error & choose new place
         }
         QDataStream toFile(&file);
-        for (auto const &val : game->deletedTilesMapEdit) {
+        for (auto const &val : editor->deletedTilesMapEdit) {
             toFile << val.m_position.x << "|" << val.m_position.y << ";";
         }
         file.close();
@@ -92,7 +96,7 @@ void mapEditTools::on_buttLoad_clicked()
     QFile file(dialog.chosenFile);
     file.open(QFile::ReadOnly);
     if (file.isOpen()) {
-        game->MAP = game->generateTemplate(game->texture);
+        editor->generateTemplate();
         std::vector<sf::Vector2i> deleted;
         QDataStream in(&file);
         QString str;
@@ -103,13 +107,13 @@ void mapEditTools::on_buttLoad_clicked()
             deleted.emplace_back(sf::Vector2i(x, y));
         }
         file.close();
-        game->deletedTilesMapEdit.clear();
+        editor->deletedTilesMapEdit.clear();
         for (auto const &pos : deleted) {
-            for (auto tile = game->MAP.begin(); tile != game->MAP.end(); tile++) {
+            for (auto tile = editor->MAP.begin(); tile != editor->MAP.end(); tile++) {
                 if (pos.x == tile->m_position.x && pos.y == tile->m_position.y) {
                     tile->setColor(sf::Color(255, 0, 0, 100));
-                    game->deletedTilesMapEdit.emplace_back(*tile);
-                    game->MAP.erase(tile);
+                    editor->deletedTilesMapEdit.emplace_back(*tile);
+                    editor->MAP.erase(tile);
                     tile--;
                     continue;
                 }
@@ -135,7 +139,7 @@ void mapEditTools::on_buttLoadFile_clicked()
     ui->mapName->setText(mapName);
     file.open(QFile::ReadOnly);
     if (file.isOpen()) {
-        std::vector<Tile> newMap = game->generateTemplate(game->texture);
+        editor->generateTemplate();
         std::vector<sf::Vector2i> deleted;
         QDataStream in(&file);
         QString str;
@@ -146,17 +150,17 @@ void mapEditTools::on_buttLoadFile_clicked()
             deleted.emplace_back(sf::Vector2i(x, y));
         }
         file.close();
-        game->deletedTilesMapEdit.clear();
+        editor->deletedTilesMapEdit.clear();
         for (auto const &pos : deleted) {
-            for (auto tile = newMap.begin(); tile != newMap.end(); tile++) {
+            for (auto tile = editor->MAP.begin(); tile != editor->MAP.end(); tile++) {
                 if (pos.x == tile->m_position.x && pos.y == tile->m_position.y) {
                     tile->setColor(sf::Color(255, 0, 0, 100));
-                    game->deletedTilesMapEdit.emplace_back(*tile);
-                    newMap.erase(tile);
+                    editor->deletedTilesMapEdit.emplace_back(*tile);
+                    editor->MAP.erase(tile);
+                    tile--;
                     continue;
                 }
             }
         }
-        game->MAP = newMap;
     }
 }
