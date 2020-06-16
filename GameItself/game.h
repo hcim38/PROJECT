@@ -34,7 +34,7 @@ public:
 
     unsigned long long turn = 1, pointsLeft = 0;
     bool pointsGiveAway = 0;
-    unsigned int winCondition = 0, TilesOnScreen = 0;
+    unsigned int winCondition = 0, TilesOnScreen = 0, playersEmpty = 0;
 
     sf::Clock clock;
     sf::Time time;

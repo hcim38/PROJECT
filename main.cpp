@@ -1,9 +1,6 @@
 #include "GUI\gamestartwindow.h"
 #include <QApplication>
 
-//TODO add win condition
-//TODO after pressing start show available maps or choose from file
-
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);

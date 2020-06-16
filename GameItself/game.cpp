@@ -384,10 +384,18 @@ int gameLoop(Game &game)
 
         window.display(); //koniec
 
-        if (game.TilesOnScreen == game.players[game.turn].ownership().size()) //win condition
+        for (auto const &player : game.players) {
+            if (player.p_ownership.empty() && player.p_nickname != "MAP") {
+                game.playersEmpty++;
+            }
+        }
+
+        if (game.TilesOnScreen == game.players[game.turn].ownership().size()
+            || game.playersEmpty == game.players.size() - 2) //win condition
             game.winCondition++;
         if (game.winCondition >= 2)
             break;
+        game.playersEmpty = 0;
     } ///Game ended
 
     window.close();

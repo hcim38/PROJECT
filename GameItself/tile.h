@@ -42,9 +42,9 @@ public:
     void makeOrigin() { m_origin = true; }
     void remOrigin() { m_origin = false; }
 
-    void setBegginerValue() { m_value = 2; } //TOOD make protected
+    void setBegginerValue() { m_value = 2; }
 
-    void valPlus1(unsigned long long &pointsLeft); //TODO make protected
+    void valPlus1(unsigned long long &pointsLeft);
     void swapOrigin(Tile &newOrigin);
     bool fight(Tile &target);    
     void textCorrection();
