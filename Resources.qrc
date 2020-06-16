@@ -1,9 +1,25 @@
 <RCC>
     <qresource prefix="/Textures">
-        <file>tiles.png</file>
-        <file>hex-tex.png</file>
+        <file>Resources/hex-tex.png</file>
+        <file>Resources/tiles.png</file>
     </qresource>
     <qresource prefix="/Fonts">
-        <file>Lato-Regular.ttf</file>
+        <file>Resources/Lato-Regular.ttf</file>
+    </qresource>
+    <qresource prefix="/Maps">
+        <file>Resources/NextRandMap.map</file>
+        <file>Resources/noIdeaWhatIveCreated.map</file>
+        <file>Resources/randMap1.map</file>
+        <file>Resources/randMap2.map</file>
+        <file>Resources/randMap3.map</file>
+        <file>Resources/Snek.map</file>
+        <file>Resources/spirala.map</file>
+        <file>Resources/TCHC.map</file>
+        <file>Resources/emptyTemplate.map</file>
+        <file>Resources/Mikado's_Map.map</file>
+        <file>Resources/Mikado's_Map2.map</file>
+        <file>Resources/Mikado's_Map3.map</file>
+        <file>Resources/Mikado's_Map4.map</file>
+        <file>Resources/Mikado's_Map5.map</file>
     </qresource>
 </RCC>

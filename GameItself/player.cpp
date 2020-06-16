@@ -8,21 +8,18 @@ void Player::removeOwnership(Tile target)
             break;
         }
 }
-
 void Player::clearOrigin()
 {
     for (auto &val : p_ownership) {
         val.remOrigin();
     }
 }
-
 void Player::colorCorrection()
 {
     for (auto &val : p_ownership) {
         val.setColor(p_playersColor);
     }
 }
-
 void Player::textCorrection()
 {
     for (auto &val : p_ownership) {

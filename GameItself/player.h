@@ -1,21 +1,24 @@
 #ifndef PLAYER_H
 #define PLAYER_H
-#include "tile.h"
+#include "GameItself\tile.h"
 
 class Player
 {
-private:
+public:
     bool p_AI;
-    std::string p_nickname;
+    QString p_nickname;
     sf::Color p_playersColor;
     std::vector<Tile> p_ownership;
 
 public:
-    Player(std::string nickname, int posInVec, bool AI = 0)
+    Player(QString nickname, int posInVec, bool AI = 0)
     {
         p_AI = AI;
         p_nickname = nickname;
         switch (posInVec) {
+        case 0:
+            p_playersColor = sf::Color(255, 255, 255, 255);
+            break;
         case 1:
             p_playersColor = sf::Color::Cyan;
             p_playersColor.a = 150;
@@ -55,7 +58,7 @@ public:
     friend std::vector<Player> setupPlayers(std::vector<Tile> &map,
                                             int playersInGame,
                                             int AIplayersInGame);
-    friend int main();
+    //friend int main();
     friend void Turnmanager(std::vector<Player> &players, Tile &clickedAt, unsigned long long &turn);
     friend bool addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long &pointsLeft);
     friend void AI(std::vector<Player> &players, unsigned long long &turn);
@@ -70,7 +73,7 @@ public:
         return col;
     }
     bool AI() { return p_AI; }
-    std::string nickname() { return p_nickname; }
+    std::string nickname() { return p_nickname.toStdString(); }
 
     void addTileOwnership(Tile target) { p_ownership.emplace_back(target); }
     void removeOwnership(Tile target);

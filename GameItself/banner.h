@@ -1,15 +1,15 @@
 #ifndef BANNER_H
 #define BANNER_H
-#include "player.h"
+#include "GameItself\player.h"
 
 class Banner : public sf::RectangleShape
 {
-private:
+public:
     sf::Text p_text;
-    sf::Font p_font;
 
 public:
     Banner(sf::Vector2f pos, sf::Vector2f size, sf::Font &font);
+    Banner();
 
     void refreshBanner(unsigned long long &pointsLeft, Player &turnOwner, bool &pointsGiveAway)
     {

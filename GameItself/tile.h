@@ -2,13 +2,22 @@
 #define TILE_H
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
-#include <iostream>
+
+#include <QCoreApplication>
+#include <QDebug>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QRandomGenerator>
 #include <QResource>
-#include <QtDebug>
+#include <QStandardPaths>
+#include <QString>
+#include <QWidget>
+
+#include "windows.h"
 
 class Tile : public sf::Sprite
 {
-private:
+public:
     sf::Vector2i m_tilesize; //wielkosc i pozycja kloca
     sf::Vector2i m_position;
     bool m_origin = false;
@@ -20,7 +29,7 @@ public:
     bool offset = 0;
 
     Tile(sf::Texture &texture, sf::Vector2i size, sf::Vector2f pos);
-    Tile(bool Null);
+    Tile();
 
     friend void plus1ForEveryone(std::vector<Tile> &tiles);
     friend std::vector<Tile> generateTemplate(sf::Texture &m_textures,
@@ -34,9 +43,9 @@ public:
     void makeOrigin() { m_origin = true; }
     void remOrigin() { m_origin = false; }
 
-    void setBegginerValue() { m_value = 2; } //TOOD make protected
+    void setBegginerValue() { m_value = 2; }
 
-    void valPlus1(unsigned long long &pointsLeft); //TODO make protected
+    void valPlus1(unsigned long long &pointsLeft);
     void swapOrigin(Tile &newOrigin);
     bool fight(Tile &target);    
     void textCorrection();
