@@ -302,13 +302,6 @@ void Game::hilightOrigin(Player &player)
     }
 }
 
-//TODO add distribution of forces bar to Banner
-//TODO add save game progress
-
-//TODO add pause menu GUI
-//TODO highscores?
-//TODO add randomization factor to fights?
-
 void Game::gameLoop()
 {
     Lines = createLines(players);
@@ -332,7 +325,7 @@ void Game::gameLoop()
                 if (pointsGiveAway) {
                     nextTurn(turn, players);
                     pointsGiveAway = 0;
-                    //if points left add 1 point from the remaining to every tile IF possible TODO long
+                    //TODO if points left add 1 point from the remaining to every tile IF possible
                     continue;
                 }
                 players[turn].clearOrigin();
