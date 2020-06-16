@@ -1,5 +1,5 @@
 # PROJECT
-Clone of android game Influence by studio Teremok Games made from scratch by me using QT creator and SFML.
+Clone of android game Influence by studio Teremok Games made from scratch by me using QT creator and SFML as a university project.
 All the textures were created by me, maps were created by me and Discord user mikado990#5749
 
 The goal of the game is simple, become the only player left on the map.
