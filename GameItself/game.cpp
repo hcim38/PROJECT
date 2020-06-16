@@ -392,7 +392,7 @@ void Game::gameLoop()
     window.close();
 
     for (auto const &player : players) {
-        if (!player.p_ownership.empty() && player.p_nickname != "MAP") {
+        if (!player.p_ownership.empty() && player.p_nickname != "MAP" && winCondition >= 2) {
             QMessageBox msg;
             msg.setText(player.p_nickname + " has won the game");
             msg.exec();
