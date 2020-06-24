@@ -18,11 +18,16 @@ public:
 
     MapEditor *editor;
 
-private slots:
+public slots:
     void on_buttExit_clicked();
 
     void on_buttNewTemplate_clicked();
 
+signals:
+    void on_Exit();
+    void on_NewTemplate();
+
+private slots:
     void on_buttSave_clicked();
 
     void on_buttLoad_clicked();

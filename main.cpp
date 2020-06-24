@@ -1,4 +1,4 @@
-#include "GUI\gamestartwindow.h"
+#include "GUI/gamestartwindow.h"
 #include <QApplication>
 
 //TODO add distribution of forces bar to Banner

@@ -11,77 +11,82 @@ Tile::Tile(sf::Texture &texture, sf::Vector2i size, sf::Vector2f pos)
 
 Tile::Tile()
 {
-    m_Null = 1;
+    p_Null = 1;
     setColor(sf::Color(255, 255, 255, 0));
-    m_position = sf::Vector2i(-10, -10);
+    p_position = sf::Vector2i(-10, -10);
 }
 
 int Tile::value() const
 {
-    return m_value;
+    return p_value;
 }
 
 sf::Vector2i Tile::tilesize()
 {
-    return m_tilesize;
+    return p_tilesize;
+}
+
+sf::Vector2i Tile::position()
+{
+    return p_position;
 }
 
 bool Tile::origin()
 {
-    return m_origin;
+    return p_origin;
 }
 
 bool Tile::Null()
 {
-    return m_Null;
+    return p_Null;
 }
 
 void Tile::makeOrigin()
 {
-    m_origin = true;
+    p_origin = true;
 }
 
 void Tile::remOrigin()
 {
-    m_origin = false;
+    p_origin = false;
 }
 
 void Tile::setBegginerValue()
 {
-    m_value = 2;
+    p_value = 2;
 }
 
 void Tile::valPlus1(unsigned long long &pointsLeft)
 {
-    if (m_value < 12) {
-        m_value += 1;
+    if (p_value < 12) {
+        p_value += 1;
         pointsLeft -= 1;
     }
 }
 
 void Tile::swapOrigin(Tile &newOrigin)
 {
-    m_origin = false;
-    newOrigin.m_origin = true;
+    p_origin = false;
+    newOrigin.p_origin = true;
 }
 
 bool Tile::fight(Tile &target)
 {
-    if (m_value > 1) { //requirement for fight
-        if (target.m_value == m_value - 1) {
+    if (p_value > 1) { //requirement for fight
+        if (target.p_value == p_value - 1) {
             //draw
-            target.m_value = 1;
-            m_value = 1;
+            target.p_value = 1;
+            p_value = 1;
             return false;
-        } else if (target.m_value < m_value - 1) {
+        } else if (target.p_value < p_value - 1) {
             //won
-            target.m_value = m_value - target.m_value - 1;
-            m_value = 1;
+            target.p_value = p_value - target.p_value - 1;
+            p_value = 1;
             return true;
         } else {
             //lost
-            target.m_value -= m_value - 1;
-            m_value = 1;
+            target.p_value -= p_value - 1;
+            p_value = 1;
             return false;
         }
     }
@@ -90,12 +95,20 @@ bool Tile::fight(Tile &target)
 
 void Tile::textCorrection()
 {
-    setTextureRect(sf::IntRect(value() * m_tilesize.x, 0, m_tilesize.x, m_tilesize.y));
+    setTextureRect(sf::IntRect(value() * p_tilesize.x, 0, p_tilesize.x, p_tilesize.y));
 }
 
 bool Tile::operator==(const Tile &rhs) const
 {
-    if (m_position.x == rhs.m_position.x && m_position.y == rhs.m_position.y)
+    if (p_position.x == rhs.p_position.x && p_position.y == rhs.p_position.y)
+        return true;
+    else
+        return false;
+}
+
+bool Tile::operator==(const sf::Vector2i &rhs) const
+{
+    if (p_position.x == rhs.x && p_position.y == rhs.y)
         return true;
     else
         return false;
@@ -108,29 +121,29 @@ bool Tile::operator!=(const Tile &rhs) const
 
 bool Tile::movePossible(Tile &target)
 {
-    if (m_position.y == target.m_position.y) {
-        return (m_position.x == target.m_position.x + 1)
-               || (m_position.x == target.m_position.x - 1);
+    if (p_position.y == target.p_position.y) {
+        return (p_position.x == target.p_position.x + 1)
+               || (p_position.x == target.p_position.x - 1);
     }
-    if (!offset) {
-        if (m_position.y == target.m_position.y + 1) {
-            return (m_position.x == target.m_position.x + 1)
-                   || (m_position.x == target.m_position.x);
+    if (!p_offset) {
+        if (p_position.y == target.p_position.y + 1) {
+            return (p_position.x == target.p_position.x + 1)
+                   || (p_position.x == target.p_position.x);
         }
 
-        if (m_position.y == target.m_position.y - 1) {
-            return (m_position.x == target.m_position.x + 1)
-                   || (m_position.x == target.m_position.x);
+        if (p_position.y == target.p_position.y - 1) {
+            return (p_position.x == target.p_position.x + 1)
+                   || (p_position.x == target.p_position.x);
         }
     } else {
-        if (m_position.y == target.m_position.y + 1) {
-            return (m_position.x == target.m_position.x - 1)
-                   || (m_position.x == target.m_position.x);
+        if (p_position.y == target.p_position.y + 1) {
+            return (p_position.x == target.p_position.x - 1)
+                   || (p_position.x == target.p_position.x);
         }
 
-        if (m_position.y == target.m_position.y - 1) {
-            return (m_position.x == target.m_position.x - 1)
-                   || (m_position.x == target.m_position.x);
+        if (p_position.y == target.p_position.y - 1) {
+            return (p_position.x == target.p_position.x - 1)
+                   || (p_position.x == target.p_position.x);
         }
     }
     return false;
@@ -141,14 +154,21 @@ void Tile::drawMe(sf::RenderTarget &window, sf::Font &font)
     window.draw(*this);
 
     textValue.setFont(font);
-    if (m_value > 0) {
-        textValue.setString(std::to_string(m_value));
+    if (p_value > 0) {
+        textValue.setString(std::to_string(p_value));
 
         textValue.setPosition(getPosition());
         textValue.move(11, 7);
-        if (m_value > 9) {
+        if (p_value > 9) {
             textValue.move(-3, 0);
         }
         window.draw(textValue);
     }
+}
+
+void Tile::setUpTile(sf::Vector2i &tilesize, sf::Vector2i position, bool offset)
+{
+    p_tilesize = tilesize;
+    p_position = position;
+    p_offset = offset;
 }

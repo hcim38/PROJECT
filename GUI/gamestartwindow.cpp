@@ -1,4 +1,4 @@
-#include "GUI\gamestartwindow.h"
+#include "GUI/gamestartwindow.h"
 #include "mapedittools.h"
 #include "startbuttonmapselection.h"
 #include "ui_gamestartwindow.h"
@@ -140,6 +140,10 @@ void gameStartWindow::on_mapEditorButton_clicked()
     MapEditor editor;
 
     mapEditTools tools(&editor);
+
+    connect(&tools, &mapEditTools::on_Exit, &editor, &MapEditor::killEditor);
+    connect(&tools, &mapEditTools::on_NewTemplate, &editor, &MapEditor::newTemplate);
+
     QPoint pos = this->pos();
     pos.setX(pos.x() + 650);
     pos.setY(pos.y() + 250);

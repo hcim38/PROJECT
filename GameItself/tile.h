@@ -22,12 +22,11 @@ public:
     Tile();
 
     friend void plus1ForEveryone(std::vector<Tile> &tiles);
-    friend std::vector<Tile> generateTemplate(sf::Texture &m_textures,
-                                              sf::Vector2i tileSize,
-                                              unsigned int mapSize);
+    friend bool sortToFile(Tile const &one, Tile const &two);
 
     int value() const;
     sf::Vector2i tilesize();
+    sf::Vector2i position();
     bool origin();
     bool Null();
 
@@ -38,21 +37,21 @@ public:
     void swapOrigin(Tile &newOrigin);     
     void textCorrection();
     void drawMe(sf::RenderTarget &window, sf::Font &font);
+    void setUpTile(sf::Vector2i &tilesize, sf::Vector2i position, bool offset);
 
     bool operator==(const Tile &rhs) const;
+    bool operator==(const sf::Vector2i &rhs) const;
     bool operator!=(const Tile &rhs) const;
     bool movePossible(Tile &target);
     bool fight(Tile &target);
 
     //vars
 
-    sf::Vector2i m_tilesize;
-    sf::Vector2i m_position;
-    bool m_origin = false;
-    bool m_Null = 0;
-    int m_value = 0;
+private:
+    sf::Vector2i p_tilesize, p_position;
+    bool p_origin = 0, p_Null = 0, p_offset = 0;
+    int p_value = 0;
     sf::Text textValue;
-    bool offset = 0;
 };
 
 #endif // TILE_H

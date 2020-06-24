@@ -16,33 +16,31 @@ mapEditTools::~mapEditTools()
 
 void mapEditTools::on_buttExit_clicked()
 {
-    //TODO dialog 'u sure?'
-    editor->killTheMapEdit = 1;
+    emit on_Exit();
     destroy();
 }
 
 void mapEditTools::on_buttNewTemplate_clicked()
 {
     //TODO dialog 'u usure?'
-    editor->newTemplateMapEdit = 1;
+    emit on_NewTemplate();
     ui->mapName->setText("MapName");
 }
 
 bool sortToFile(Tile const &one, Tile const &two)
 {
-    if (one.m_position.x == two.m_position.x) {
-        return one.m_position.y < two.m_position.y;
+    if (one.p_position.x == two.p_position.x) {
+        return one.p_position.y < two.p_position.y;
     } else {
-        return one.m_position.x < two.m_position.x;
+        return one.p_position.x < two.p_position.x;
     }
 }
 
 void mapEditTools::on_buttSave_clicked()
 {
-    if (!editor->deletedTilesMapEdit.empty()) {
-        std::sort(editor->deletedTilesMapEdit.begin(),
-                  editor->deletedTilesMapEdit.end(),
-                  sortToFile);
+    std::vector<Tile> deleted = editor->getDeleted();
+    if (!deleted.empty()) {
+        std::sort(deleted.begin(), deleted.end(), sortToFile);
 
         QString filename = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
         QDir dir = filename;
@@ -75,8 +73,8 @@ void mapEditTools::on_buttSave_clicked()
             //TODO dialog error & choose new place
         }
         QDataStream toFile(&file);
-        for (auto const &val : editor->deletedTilesMapEdit) {
-            toFile << val.m_position.x << "|" << val.m_position.y << ";";
+        for (auto &val : deleted) {
+            toFile << val.position().x << "|" << val.position().y << ";";
         }
         file.close();
         //TODO dialog saved as filename
@@ -107,18 +105,7 @@ void mapEditTools::on_buttLoad_clicked()
             deleted.emplace_back(sf::Vector2i(x, y));
         }
         file.close();
-        editor->deletedTilesMapEdit.clear();
-        for (auto const &pos : deleted) {
-            for (auto tile = editor->MAP.begin(); tile != editor->MAP.end(); tile++) {
-                if (pos.x == tile->m_position.x && pos.y == tile->m_position.y) {
-                    tile->setColor(sf::Color(255, 0, 0, 100));
-                    editor->deletedTilesMapEdit.emplace_back(*tile);
-                    editor->MAP.erase(tile);
-                    tile--;
-                    continue;
-                }
-            }
-        }
+        editor->loadMap(deleted);
     }
 }
 
@@ -150,17 +137,6 @@ void mapEditTools::on_buttLoadFile_clicked()
             deleted.emplace_back(sf::Vector2i(x, y));
         }
         file.close();
-        editor->deletedTilesMapEdit.clear();
-        for (auto const &pos : deleted) {
-            for (auto tile = editor->MAP.begin(); tile != editor->MAP.end(); tile++) {
-                if (pos.x == tile->m_position.x && pos.y == tile->m_position.y) {
-                    tile->setColor(sf::Color(255, 0, 0, 100));
-                    editor->deletedTilesMapEdit.emplace_back(*tile);
-                    editor->MAP.erase(tile);
-                    tile--;
-                    continue;
-                }
-            }
-        }
+        editor->loadMap(deleted);
     }
 }
