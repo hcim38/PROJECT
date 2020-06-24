@@ -17,8 +17,6 @@ public:
     explicit startButtonMapSelection(QWidget *parent = nullptr);
     ~startButtonMapSelection();
 
-    QString filename;
-
 private slots:
     void on_buttPremade_clicked();
 
@@ -28,6 +26,9 @@ private slots:
 
 private:
     Ui::startButtonMapSelection *ui;
+
+public:
+    QString filename;
 };
 
 #endif // STARTBUTTONMAPSELECTION_H

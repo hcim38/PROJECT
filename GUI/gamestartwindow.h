@@ -22,6 +22,7 @@ private slots:
     void on_Player3Active_clicked();
     void on_Player4Active_clicked();
     void on_Player5Active_clicked();
+
     void on_startButton_clicked();
 
     void on_defaultButton_clicked();
