@@ -12,11 +12,8 @@ Game::Game()
     delete qrFontPtr;
 
     clickedAt = Tile();
-
     generateTemplate();
-
-    players = setupPlayers(MAP);
-
+    players = setupPlayers();
     TilesOnScreen = MAP.size();
 
     banner = Banner(sf::Vector2f(0, 640 - 32), sf::Vector2f(640, 32), font);
@@ -165,14 +162,12 @@ bool Game::addPointsToTiles(Tile &clickedAt, Player &player, unsigned long long 
     return false;
 }
 
-std::vector<Player> Game::setupPlayers(std::vector<Tile> &map,
-                                       int playersInGame,
-                                       int AIplayersInGame)
+std::vector<Player> Game::setupPlayers(int playersInGame, int AIplayersInGame)
 {
     QRandomGenerator randomizer(QRandomGenerator::securelySeeded());
     std::vector<Player> players;
     QString playerName;
-    players.emplace_back(Player(map));
+    players.emplace_back(Player(MAP));
 
     int human = playersInGame - AIplayersInGame;
 
@@ -402,9 +397,16 @@ void Game::captureRandomTiles()
     QString playerName;
 
     for (auto it = players.begin() + 1; it != players.end(); it++) {
-        capture(players[0].ownership()[randomizer.bounded(0, (players[0].p_ownership.size()))],
-                players[0],
-                *it);
+        if (!players[0].ownership().empty()) {
+            capture(players[0].ownership()[randomizer.bounded(0, (players[0].p_ownership.size()))],
+                    players[0],
+                    *it);
+        }
+    }
+    for (auto it = players.end() - 1; it != players.begin() + 1; it--) {
+        if (it->ownership().empty()) {
+            players.erase(it);
+        }
     }
     for (auto it = players.begin() + 1; it != players.end(); it++) {
         it->p_ownership[0].setBegginerValue();
@@ -417,13 +419,12 @@ void Game::loadMap(QString &path, std::vector<Player> &NewPlayers)
     QFile file(path);
     file.open(QFile::ReadOnly);
     if (file.isOpen()) {
-        generateTemplate();
         std::vector<sf::Vector2i> deleted;
         QDataStream in(&file);
         QString str;
         int x, y;
 
-        while (!in.atEnd()) {
+        while (!in.atEnd()) { //TODO get rid of str and translate current maps
             in >> x >> str >> y >> str;
             deleted.emplace_back(sf::Vector2i(x, y));
         }

@@ -16,3 +16,5 @@ To move on another tile player is supposed to click on the tile that has more th
 Pressing space button makes the player unable to move until his next turn and process of giving out points to tile begins.
 After movement turn during points giveaway process, the player can find how many points he has left on the bottom of the screen.
 To add more points player is supposed to click on the tile he owns, every tile has a maximum of 12 points.
+
+https://github.com/hcim38/PROJECT

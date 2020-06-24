@@ -60,52 +60,55 @@ void gameStartWindow::on_Player5Active_clicked()
 
 void gameStartWindow::on_startButton_clicked()
 {
-    Game game;
-    std::vector<Player> TEMP;
-    TEMP.emplace_back(Player("MAP", 0));
-    int i = 1;
-    if (ui->groupBox_1->isEnabled()) {
-        TEMP.emplace_back(
-            Player((ui->playerNickname1->text()), i, ui->playerComputer1->isChecked()));
-        i++;
-    }
-    if (ui->groupBox_2->isEnabled()) {
-        TEMP.emplace_back(
-            Player((ui->playerNickname2->text()), i, ui->playerComputer2->isChecked()));
-        i++;
-    }
-    if (ui->groupBox_3->isEnabled()) {
-        TEMP.emplace_back(
-            Player((ui->playerNickname3->text()), i, ui->playerComputer3->isChecked()));
-        i++;
-    }
-    if (ui->groupBox_4->isEnabled()) {
-        TEMP.emplace_back(
-            Player((ui->playerNickname4->text()), i, ui->playerComputer4->isChecked()));
-        i++;
-    }
-    if (ui->groupBox_5->isEnabled()) {
-        TEMP.emplace_back(
-            Player((ui->playerNickname5->text()), i, ui->playerComputer5->isChecked()));
-        i++;
-    }
+    if (ui->groupBox_1->isEnabled() || ui->groupBox_2->isEnabled() || ui->groupBox_3->isEnabled()
+        || ui->groupBox_4->isEnabled() || ui->groupBox_5->isEnabled()) {
+        Game game;
+        std::vector<Player> TEMP;
+        TEMP.emplace_back(Player("MAP", 0));
+        int i = 1;
+        if (ui->groupBox_1->isEnabled()) {
+            TEMP.emplace_back(
+                Player((ui->playerNickname1->text()), i, ui->playerComputer1->isChecked()));
+            i++;
+        }
+        if (ui->groupBox_2->isEnabled()) {
+            TEMP.emplace_back(
+                Player((ui->playerNickname2->text()), i, ui->playerComputer2->isChecked()));
+            i++;
+        }
+        if (ui->groupBox_3->isEnabled()) {
+            TEMP.emplace_back(
+                Player((ui->playerNickname3->text()), i, ui->playerComputer3->isChecked()));
+            i++;
+        }
+        if (ui->groupBox_4->isEnabled()) {
+            TEMP.emplace_back(
+                Player((ui->playerNickname4->text()), i, ui->playerComputer4->isChecked()));
+            i++;
+        }
+        if (ui->groupBox_5->isEnabled()) {
+            TEMP.emplace_back(
+                Player((ui->playerNickname5->text()), i, ui->playerComputer5->isChecked()));
+            i++;
+        }
 
-    //load map
-    startButtonMapSelection dial(this);
-    dial.setWindowFlag(Qt::WindowTitleHint);
-    dial.show();
+        //load map
+        startButtonMapSelection dial(this);
+        dial.setWindowFlag(Qt::WindowTitleHint);
+        dial.show();
 
-    dial.exec();
+        dial.exec();
 
-    if (dial.filename == "") {
-        return;
+        if (dial.filename == "") {
+            return;
+        }
+
+        game.loadMap(dial.filename, TEMP);
+
+        hide();
+        game.gameLoop();
+        show();
     }
-
-    game.loadMap(dial.filename, TEMP);
-
-    hide();
-    game.gameLoop();
-    show();
 }
 
 void gameStartWindow::on_defaultButton_clicked()
