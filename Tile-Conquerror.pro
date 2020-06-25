@@ -9,6 +9,7 @@ SOURCES += \
         GameItself\Banner.cpp \
         GameItself\game.cpp \
         GUI\gamestartwindow.cpp \
+        GameItself\functionsOutsideClasses.cpp \
         main.cpp \
         GameItself\mapEditorMode.cpp \
         GameItself\player.cpp \
@@ -26,7 +27,8 @@ HEADERS += \
     GameItself\tile.h \
     GUI\mapedittools.h \
     GUI\premademapspaths.h \
-    GUI\startbuttonmapselection.h
+    GUI\startbuttonmapselection.h \
+    GameItself\functionsOutsideClasses.h
 
 INCLUDEPATH += "C:/SFML-2.5.1/include"
 LIBS += -L"C:/SFML-2.5.1/lib"

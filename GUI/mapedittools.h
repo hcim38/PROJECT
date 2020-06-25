@@ -16,13 +16,17 @@ public:
     explicit mapEditTools(MapEditor *Editor, QWidget *parent = nullptr);
     ~mapEditTools();
 
-    MapEditor *editor;
-
-private slots:
+public slots:
     void on_buttExit_clicked();
 
     void on_buttNewTemplate_clicked();
 
+signals:
+    void on_Exit();
+
+    void on_NewTemplate();
+
+private slots:
     void on_buttSave_clicked();
 
     void on_buttLoad_clicked();
@@ -31,6 +35,7 @@ private slots:
 
 private:
     Ui::mapEditTools *ui;
+    MapEditor *editor;
 };
 
 #endif // MAPEDITTOOLS_H
