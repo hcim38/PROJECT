@@ -45,11 +45,70 @@ Player::Player(std::vector<Tile> map)
     }
 }
 
+std::vector<Tile> Player::ownership()
+{
+    return p_ownership;
+}
+
+sf::Color Player::playersColor()
+{
+    return p_playersColor;
+}
+
 sf::Color Player::playersColorH()
 {
     sf::Color col = p_playersColor;
     col.a = 255;
     return col;
+}
+
+bool Player::AI()
+{
+    return p_AI;
+}
+
+bool Player::addPointsToTiles(Tile &clickedAt, unsigned long long &pointsLeft)
+{
+    if (pointsLeft > 0) {
+        for (auto &tile : p_ownership) {
+            if (tile == clickedAt && tile.getColor() == playersColor()) {
+                tile.valPlus1(pointsLeft);
+            }
+        }
+        if (pointsLeft == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void Player::hilightOrigin()
+{
+    sf::Color actual;
+
+    for (auto &tile : p_ownership) {
+        if (tile.origin()) {
+            actual = tile.getColor();
+            actual.a = 255;
+            tile.setColor(actual);
+        }
+    }
+}
+
+std::string Player::nickname()
+{
+    return p_nickname.toStdString();
+}
+
+void Player::capture(Tile target, Player &loser)
+{
+    addTileOwnership(target);
+    loser.removeOwnership(target);
+}
+
+void Player::addTileOwnership(Tile target)
+{
+    p_ownership.emplace_back(target);
 }
 
 void Player::removeOwnership(Tile target)

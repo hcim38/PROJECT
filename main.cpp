@@ -1,4 +1,4 @@
-#include "GUI\gamestartwindow.h"
+#include "GUI/gamestartwindow.h"
 #include <QApplication>
 
 //TODO add distribution of forces bar to Banner
@@ -6,7 +6,6 @@
 //TODO add pause menu GUI
 //TODO highscores?
 //TODO add randomization factor to fights?
-//TODO do not allow to start the game without players!
 
 int main(int argc, char *argv[])
 {

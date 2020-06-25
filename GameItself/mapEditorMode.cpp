@@ -13,7 +13,6 @@ MapEditor::MapEditor()
     delete qrFontPtr;
 
     clickedAt = Tile();
-
     generateTemplate();
 }
 =======
@@ -45,7 +44,7 @@ std::vector<sf::VertexArray> MapEditor::createLines(std::vector<Tile> &tiles)
     return vec;
 }
 
-bool MapEditor::clicked(sf::Vector2i pos, std::vector<Tile> &tiles, Tile &clickedAt)
+bool MapEditor::clicked(sf::Vector2i pos, std::vector<Tile> &tiles)
 {
     for (auto &val : tiles) {
         if (val.getGlobalBounds().contains(pos.x, pos.y)) {
@@ -55,6 +54,22 @@ bool MapEditor::clicked(sf::Vector2i pos, std::vector<Tile> &tiles, Tile &clicke
     }
 
     return 0;
+}
+
+void MapEditor::loadMap(std::vector<sf::Vector2i> &deleted)
+{
+    deletedTilesMapEdit.clear();
+    for (auto const &pos : deleted) {
+        for (auto tile = MAP.begin(); tile != MAP.end(); tile++) {
+            if (pos.x == tile->position().x && pos.y == tile->position().y) {
+                tile->setColor(sf::Color(255, 0, 0, 100));
+                deletedTilesMapEdit.emplace_back(*tile);
+                MAP.erase(tile);
+                tile--;
+                continue;
+            }
+        }
+    }
 }
 
 void MapEditor::mapeditor()
@@ -85,8 +100,8 @@ void MapEditor::mapeditor()
             }
             if (event.type == event.MouseButtonReleased
                 && event.mouseButton.button == sf::Mouse::Left) {
-                clicked(sf::Mouse::getPosition(window), MAP, clickedAt);
-                clicked(sf::Mouse::getPosition(window), deletedTilesMapEdit, clickedAt);
+                clicked(sf::Mouse::getPosition(window), MAP);
+                clicked(sf::Mouse::getPosition(window), deletedTilesMapEdit);
             }
             if (event.type == event.KeyReleased && event.key.code == sf::Keyboard::Space) {
                 return;
