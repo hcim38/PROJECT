@@ -13,8 +13,6 @@ public:
     virtual std::vector<sf::VertexArray> createLines(std::vector<Player> &players);
 
     void capture(Tile target, Player &loser, Player &winner);
-    void AI(std::vector<Player> &players, unsigned long long &turn);
-    void plus1ForEveryone(std::vector<Tile> &tiles);
     void generateTemplate(sf::Vector2i tileSize = sf::Vector2(30, 30), unsigned int mapSize = 10);
     void nextTurn(unsigned long long &turn, std::vector<Player> &players);
     void gameLoop();

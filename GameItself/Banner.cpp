@@ -9,7 +9,11 @@ Banner::Banner(sf::Vector2f pos, sf::Vector2f size, sf::Font &font)
     p_text.setStyle(sf::Text::Bold);
 }
 
-Banner::Banner() {}
+Banner::Banner()
+{
+    setSize(sf::Vector2f(1, 1));
+    setPosition(sf::Vector2f(-10, -10));
+}
 
 void Banner::refreshBanner(unsigned long long &pointsLeft, Player &turnOwner, bool &pointsGiveAway)
 {
