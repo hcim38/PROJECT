@@ -1,23 +1,6 @@
 #include "mapEditorMode.h"
 
-<<<<<<< Updated upstream
-MapEditor::MapEditor()
-{
-    qrTexturePtr = new QResource(":/Textures/Resources/hex-tex.png");
-    qrFontPtr = new QResource(":/Fonts/Resources/Lato-Regular.ttf");
-
-    texture.loadFromMemory(qrTexturePtr->data(), qrTexturePtr->size()); //lading resources
-    font.loadFromMemory(qrFontPtr->data(), qrFontPtr->size());
-
-    delete qrTexturePtr;
-    delete qrFontPtr;
-
-    clickedAt = Tile();
-    generateTemplate();
-}
-=======
 MapEditor::MapEditor() : Game() {}
->>>>>>> Stashed changes
 
 std::vector<sf::VertexArray> MapEditor::createLines(std::vector<Tile> &tiles)
 {
