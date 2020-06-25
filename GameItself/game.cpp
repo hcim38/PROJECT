@@ -192,7 +192,7 @@ void Game::gameLoop()
     return;
 }
 
-void Game::loadMap(QString &path, std::vector<Player> &NewPlayers)
+void Game::loadMap(QString path, std::vector<Player> &NewPlayers)
 {
     players = NewPlayers;
     QFile file(path);

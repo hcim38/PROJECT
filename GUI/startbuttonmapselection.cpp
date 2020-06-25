@@ -22,7 +22,7 @@ void startButtonMapSelection::on_buttPremade_clicked()
     dialog.show();
     dialog.disableEmptybutt();
     dialog.exec();
-    filename = dialog.chosenFile;
+    p_filename = dialog.chosenFile();
     done(1);
 }
 
@@ -33,40 +33,40 @@ void startButtonMapSelection::on_buttQuick_clicked()
 
     switch (map) {
     case 0:
-        filename = ":/Maps/Resources/Mikado's_Map.map";
+        p_filename = ":/Maps/Resources/Mikado's_Map.map";
         break;
     case 1:
-        filename = ":/Maps/Resources/Mikado's_Map2.map";
+        p_filename = ":/Maps/Resources/Mikado's_Map2.map";
         break;
     case 2:
-        filename = ":/Maps/Resources/Mikado's_Map3.map";
+        p_filename = ":/Maps/Resources/Mikado's_Map3.map";
         break;
     case 3:
-        filename = ":/Maps/Resources/Mikado's_Map4.map";
+        p_filename = ":/Maps/Resources/Mikado's_Map4.map";
         break;
     case 4:
-        filename = ":/Maps/Resources/Mikado's_Map5.map";
+        p_filename = ":/Maps/Resources/Mikado's_Map5.map";
         break;
     case 5:
-        filename = ":/Maps/Resources/NextRandMap.map";
+        p_filename = ":/Maps/Resources/NextRandMap.map";
         break;
     case 6:
-        filename = ":/Maps/Resources/noIdeaWhatIveCreated.map";
+        p_filename = ":/Maps/Resources/noIdeaWhatIveCreated.map";
         break;
     case 7:
-        filename = ":/Maps/Resources/randMap1.map";
+        p_filename = ":/Maps/Resources/randMap1.map";
         break;
     case 8:
-        filename = ":/Maps/Resources/randMap2.map";
+        p_filename = ":/Maps/Resources/randMap2.map";
         break;
     case 9:
-        filename = ":/Maps/Resources/randMap3.map";
+        p_filename = ":/Maps/Resources/randMap3.map";
         break;
     case 10:
-        filename = ":/Maps/Resources/Snek.map";
+        p_filename = ":/Maps/Resources/Snek.map";
         break;
     case 11:
-        filename = ":/Maps/Resources/spirala.map";
+        p_filename = ":/Maps/Resources/spirala.map";
         break;
     }
     done(1);
@@ -75,9 +75,14 @@ void startButtonMapSelection::on_buttQuick_clicked()
 void startButtonMapSelection::on_buttCustom_clicked()
 {
     QString appdata = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    filename = QFileDialog::getOpenFileName(this,
-                                            tr("Open Map"),
-                                            appdata + "/maps",
-                                            tr("Map (*.map);;All files(*)"));
+    p_filename = QFileDialog::getOpenFileName(this,
+                                              tr("Open Map"),
+                                              appdata + "/maps",
+                                              tr("Map (*.map);;All files(*)"));
     done(1);
+}
+
+QString startButtonMapSelection::filename()
+{
+    return p_filename;
 }

@@ -99,11 +99,11 @@ void gameStartWindow::on_startButton_clicked()
 
         dial.exec();
 
-        if (dial.filename == "") {
+        if (dial.filename() == "") {
             return;
         }
 
-        game.loadMap(dial.filename, TEMP);
+        game.loadMap(dial.filename(), TEMP);
 
         hide();
         game.gameLoop();

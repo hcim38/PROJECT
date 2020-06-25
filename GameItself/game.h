@@ -16,7 +16,7 @@ public:
     void generateTemplate(sf::Vector2i tileSize = sf::Vector2(30, 30), unsigned int mapSize = 10);
     void nextTurn(unsigned long long &turn, std::vector<Player> &players);
     void gameLoop();
-    void loadMap(QString &path, std::vector<Player> &NewPlayers);
+    void loadMap(QString path, std::vector<Player> &NewPlayers);
 
     //vars
 protected:

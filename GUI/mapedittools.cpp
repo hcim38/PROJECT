@@ -91,7 +91,7 @@ void mapEditTools::on_buttLoad_clicked()
     dialog.show();
     dialog.exec();
 
-    QFile file(dialog.chosenFile);
+    QFile file(dialog.chosenFile());
     file.open(QFile::ReadOnly);
     if (file.isOpen()) {
         editor->generateTemplate();

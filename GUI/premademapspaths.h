@@ -16,6 +16,7 @@ public:
     ~PremadeMapsPaths();
 
     void disableEmptybutt();
+    QString chosenFile();
 
 private slots:
     void on_buttEmptyMap_clicked();
@@ -37,9 +38,9 @@ private slots:
 
 private:
     Ui::PremadeMapsPaths *ui;
+    QString p_chosenFile;
 
 public:
-    QString chosenFile;
 };
 
 #endif // PREMADEMAPSPATHS_H
