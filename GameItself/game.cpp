@@ -12,10 +12,16 @@ Game::Game()
     delete qrFontPtr;
 
     clickedAt = Tile();
+<<<<<<< Updated upstream
     generateTemplate();
     players = setupPlayers();
     TilesOnScreen = MAP.size();
 
+=======
+}
+Game::Game(bool) : Game()
+{
+>>>>>>> Stashed changes
     banner = Banner(sf::Vector2f(0, 640 - 32), sf::Vector2f(640, 32), font);
 }
 

@@ -1,5 +1,6 @@
 #include "mapEditorMode.h"
 
+<<<<<<< Updated upstream
 MapEditor::MapEditor()
 {
     qrTexturePtr = new QResource(":/Textures/Resources/hex-tex.png");
@@ -15,6 +16,9 @@ MapEditor::MapEditor()
 
     generateTemplate();
 }
+=======
+MapEditor::MapEditor() : Game() {}
+>>>>>>> Stashed changes
 
 std::vector<sf::VertexArray> MapEditor::createLines(std::vector<Tile> &tiles)
 {

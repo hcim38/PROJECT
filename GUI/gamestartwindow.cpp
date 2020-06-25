@@ -62,7 +62,7 @@ void gameStartWindow::on_startButton_clicked()
 {
     if (ui->groupBox_1->isEnabled() || ui->groupBox_2->isEnabled() || ui->groupBox_3->isEnabled()
         || ui->groupBox_4->isEnabled() || ui->groupBox_5->isEnabled()) {
-        Game game;
+        Game game(1);
         std::vector<Player> TEMP;
         TEMP.emplace_back(Player("MAP", 0));
         int i = 1;

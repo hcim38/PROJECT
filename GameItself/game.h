@@ -6,6 +6,7 @@ class Game
 {
 public:
     Game();
+    Game(bool);
     virtual ~Game();
 
     virtual void clicked(sf::Vector2i pos, std::vector<Player> &players, Tile &clickedAt);
@@ -27,9 +28,22 @@ public:
     void loadMap(QString &path, std::vector<Player> &NewPlayers);
 
     //vars
+<<<<<<< Updated upstream
     std::vector<Tile> MAP;
 
 protected:
+=======
+
+protected:
+    Tile clickedAt;
+    std::vector<Tile> MAP;
+
+private:
+    QResource *qrTexturePtr;
+    QResource *qrFontPtr;
+    sf::Texture texture;
+    sf::Font font;
+>>>>>>> Stashed changes
     Banner banner;
     std::vector<Player> players;
     std::vector<sf::VertexArray> Lines;
