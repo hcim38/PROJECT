@@ -206,8 +206,8 @@ void Game::loadMap(QString path, std::vector<Player> &NewPlayers)
         QString str;
         int x, y;
 
-        while (!in.atEnd()) { //TODO get rid of str and translate current maps
-            in >> x >> str >> y >> str;
+        while (!in.atEnd()) {
+            in >> x >> y;
             deleted.emplace_back(sf::Vector2i(x, y));
         }
         file.close();

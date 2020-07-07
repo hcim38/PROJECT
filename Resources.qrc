@@ -7,19 +7,20 @@
         <file>Resources/Lato-Regular.ttf</file>
     </qresource>
     <qresource prefix="/Maps">
-        <file>Resources/NextRandMap.map</file>
-        <file>Resources/noIdeaWhatIveCreated.map</file>
-        <file>Resources/randMap1.map</file>
-        <file>Resources/randMap2.map</file>
-        <file>Resources/randMap3.map</file>
-        <file>Resources/Snek.map</file>
-        <file>Resources/spirala.map</file>
-        <file>Resources/TCHC.map</file>
-        <file>Resources/emptyTemplate.map</file>
-        <file>Resources/Mikado's_Map.map</file>
-        <file>Resources/Mikado's_Map2.map</file>
-        <file>Resources/Mikado's_Map3.map</file>
-        <file>Resources/Mikado's_Map4.map</file>
-        <file>Resources/Mikado's_Map5.map</file>
+        <file>Resources/emptyTemplate.mapx</file>
+        <file>Resources/Mikado's_Map.mapx</file>
+        <file>Resources/Mikado's_Map2.mapx</file>
+        <file>Resources/Mikado's_Map3.mapx</file>
+        <file>Resources/Mikado's_Map4.mapx</file>
+        <file>Resources/Mikado's_Map5.mapx</file>
+        <file>Resources/NextRandMap.mapx</file>
+        <file>Resources/noIdeaWhatIveCreated.mapx</file>
+        <file>Resources/randMap1.mapx</file>
+        <file>Resources/randMap2.mapx</file>
+        <file>Resources/randMap3.mapx</file>
+        <file>Resources/Snek.mapx</file>
+        <file>Resources/spirala.mapx</file>
+        <file>Resources/SuperSecret.mapx</file>
+        <file>Resources/TCHC.mapx</file>
     </qresource>
 </RCC>

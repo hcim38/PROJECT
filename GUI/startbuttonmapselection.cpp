@@ -33,40 +33,40 @@ void startButtonMapSelection::on_buttQuick_clicked()
 
     switch (map) {
     case 0:
-        p_filename = ":/Maps/Resources/Mikado's_Map.map";
+        p_filename = ":/Maps/Resources/Mikado's_Map.mapx";
         break;
     case 1:
-        p_filename = ":/Maps/Resources/Mikado's_Map2.map";
+        p_filename = ":/Maps/Resources/Mikado's_Map2.mapx";
         break;
     case 2:
-        p_filename = ":/Maps/Resources/Mikado's_Map3.map";
+        p_filename = ":/Maps/Resources/Mikado's_Map3.mapx";
         break;
     case 3:
-        p_filename = ":/Maps/Resources/Mikado's_Map4.map";
+        p_filename = ":/Maps/Resources/Mikado's_Map4.mapx";
         break;
     case 4:
-        p_filename = ":/Maps/Resources/Mikado's_Map5.map";
+        p_filename = ":/Maps/Resources/Mikado's_Map5.mapx";
         break;
     case 5:
-        p_filename = ":/Maps/Resources/NextRandMap.map";
+        p_filename = ":/Maps/Resources/NextRandMap.mapx";
         break;
     case 6:
-        p_filename = ":/Maps/Resources/noIdeaWhatIveCreated.map";
+        p_filename = ":/Maps/Resources/noIdeaWhatIveCreated.mapx";
         break;
     case 7:
-        p_filename = ":/Maps/Resources/randMap1.map";
+        p_filename = ":/Maps/Resources/randMap1.mapx";
         break;
     case 8:
-        p_filename = ":/Maps/Resources/randMap2.map";
+        p_filename = ":/Maps/Resources/randMap2.mapx";
         break;
     case 9:
-        p_filename = ":/Maps/Resources/randMap3.map";
+        p_filename = ":/Maps/Resources/randMap3.mapx";
         break;
     case 10:
-        p_filename = ":/Maps/Resources/Snek.map";
+        p_filename = ":/Maps/Resources/Snek.mapx";
         break;
     case 11:
-        p_filename = ":/Maps/Resources/spirala.map";
+        p_filename = ":/Maps/Resources/spirala.mapx";
         break;
     }
     done(1);
@@ -78,7 +78,7 @@ void startButtonMapSelection::on_buttCustom_clicked()
     p_filename = QFileDialog::getOpenFileName(this,
                                               tr("Open Map"),
                                               appdata + "/maps",
-                                              tr("Map (*.map);;All files(*)"));
+                                              tr("Map (*.mapx);;All files(*)"));
     done(1);
 }
 

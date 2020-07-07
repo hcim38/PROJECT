@@ -61,9 +61,9 @@ void mapEditTools::on_buttSave_clicked()
             }
         }
 
-        QFile file(filename + "\\" + mapName + ".map");
+        QFile file(filename + "\\" + mapName + ".mapx");
         while (file.exists()) {
-            file.setFileName(filename + "\\" + mapName + QString::number(i) + ".map");
+            file.setFileName(filename + "\\" + mapName + QString::number(i) + ".mapx");
             i++;
             if (i > 999) {
                 break;
@@ -74,7 +74,7 @@ void mapEditTools::on_buttSave_clicked()
         }
         QDataStream toFile(&file);
         for (auto &val : deleted) {
-            toFile << val.position().x << "|" << val.position().y << ";";
+            toFile << val.position().x << val.position().y;
         }
         file.close();
         //TODO dialog saved as filename
@@ -101,7 +101,7 @@ void mapEditTools::on_buttLoad_clicked()
         int x, y;
 
         while (!in.atEnd()) {
-            in >> x >> str >> y >> str;
+            in >> x >> y;
             deleted.emplace_back(sf::Vector2i(x, y));
         }
         file.close();
@@ -115,13 +115,13 @@ void mapEditTools::on_buttLoadFile_clicked()
     QString filename = QFileDialog::getOpenFileName(this,
                                                     tr("Open Map"),
                                                     appdata + "/maps",
-                                                    tr("Map (*.map);;All files(*)"));
+                                                    tr("Map (*.mapx);;All files(*)"));
     if (filename == "")
         return;
     QFile file(filename);
     QString mapName = QFileInfo(file.fileName()).fileName();
-    if (mapName.contains(".map")) {
-        mapName.replace(".map", "");
+    if (mapName.contains(".mapx")) {
+        mapName.replace(".mapx", "");
     }
     ui->mapName->setText(mapName);
     file.open(QFile::ReadOnly);
@@ -133,7 +133,7 @@ void mapEditTools::on_buttLoadFile_clicked()
         int x, y;
 
         while (!in.atEnd()) {
-            in >> x >> str >> y >> str;
+            in >> x >> y;
             deleted.emplace_back(sf::Vector2i(x, y));
         }
         file.close();
